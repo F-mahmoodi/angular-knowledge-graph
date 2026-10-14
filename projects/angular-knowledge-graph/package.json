@@ -28,7 +28,7 @@
     "url": "https://github.com/F-mahmoodi/angular-knowledge-graph/issues"
   },
   "license": "MIT",
-  "author": "Farnaz",
+  "author": "Farnaz Mahmoodi (https://github.com/F-mahmoodi)",
   "peerDependencies": {
     "@angular/common": "^22.2.0",
     "@angular/core": "^22.2.0"

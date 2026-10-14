@@ -400,7 +400,7 @@ The demo uses a small, hand-written knowledge graph of **the history of computin
 
 ## License
 
-[MIT](https://github.com/F-mahmoodi/angular-knowledge-graph/blob/main/LICENSE) © Farnaz
+[MIT](https://github.com/F-mahmoodi/angular-knowledge-graph/blob/main/LICENSE) © Farnaz Mahmoodi
 
 ---
 

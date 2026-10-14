@@ -400,7 +400,7 @@ The demo uses a small, hand-written knowledge graph of **the history of computin
 
 ## License
 
-[MIT](LICENSE) © Farnaz
+[MIT](LICENSE) © Farnaz Mahmoodi
 
 ---
 
