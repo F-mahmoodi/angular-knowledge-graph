@@ -1,8 +1,10 @@
 /* ngx-constellation — all rules are scoped under .ngx-constellation (encapsulation: None,
    because the graph's SVG nodes are created by the engine at runtime). */
 
-.ngx-constellation {
-  --nc-font: Vazirmatn, IRANSans, Tahoma, system-ui, -apple-system, 'Segoe UI', sans-serif;
+:where(.ngx-constellation) {
+  --nc-font:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, Vazirmatn, Tahoma,
+    sans-serif;
   --nc-radius: 14px;
   display: block;
   position: relative;
@@ -16,8 +18,11 @@
   -webkit-font-smoothing: antialiased;
   isolation: isolate;
 }
-.ngx-constellation,
-.ngx-constellation[data-theme='light'] {
+:where(.ngx-constellation[dir='rtl']) {
+  --nc-font: Vazirmatn, IRANSans, Tahoma, system-ui, sans-serif;
+}
+:where(.ngx-constellation),
+:where(.ngx-constellation[data-theme='light']) {
   --nc-bg: #f6f3ec;
   --nc-surface: #fffdf9;
   --nc-surface-2: #f0ebdf;
@@ -39,7 +44,7 @@
   --nc-shadow: 0 1px 2px rgba(28, 35, 51, 0.06), 0 10px 30px rgba(28, 35, 51, 0.08);
   color-scheme: light;
 }
-.ngx-constellation[data-theme='dark'] {
+:where(.ngx-constellation[data-theme='dark']) {
   --nc-bg: #0e1525;
   --nc-surface: #141d31;
   --nc-surface-2: #1a2540;
@@ -61,7 +66,7 @@
   --nc-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
   color-scheme: dark;
 }
-.ngx-constellation[data-theme='sky'] {
+:where(.ngx-constellation[data-theme='sky']) {
   --nc-bg: #060b1a;
   --nc-surface: #0d1430;
   --nc-surface-2: #141d42;

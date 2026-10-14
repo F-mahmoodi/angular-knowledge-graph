@@ -105,8 +105,8 @@ export class NgxConstellation {
   readonly types = input<ConstellationType[]>([]);
   /** Labelled ticks for the timeline axis. */
   readonly eras = input<ConstellationEra[]>([]);
-  /** Built-in language: Persian (RTL) or English (LTR). */
-  readonly locale = input<'fa' | 'en'>('fa');
+  /** Built-in language: English (LTR, default) or Persian (RTL). */
+  readonly locale = input<'en' | 'fa'>('en');
   /** Override any UI text. */
   readonly strings = input<Partial<ConstellationStrings> | null>(null);
   /** Text direction; defaults to the locale's direction. */

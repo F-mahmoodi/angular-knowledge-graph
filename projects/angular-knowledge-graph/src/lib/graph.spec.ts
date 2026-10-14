@@ -137,10 +137,10 @@ describe('cssKey', () => {
 describe('textDir', () => {
   it('detects the direction from the first strong character', async () => {
     const { textDir } = await import('./engine');
-    expect(textDir('نوح (قرآن)')).toBe('rtl');
-    expect(textDir('(1) نوح')).toBe('rtl');
+    expect(textDir('سلام (دنیا)')).toBe('rtl');
+    expect(textDir('(1) سلام')).toBe('rtl');
     expect(textDir('Noah')).toBe('ltr');
-    expect(textDir('Noah — نوح')).toBe('ltr');
+    expect(textDir('Hello — سلام')).toBe('ltr');
     expect(textDir('123')).toBe('ltr');
   });
 });

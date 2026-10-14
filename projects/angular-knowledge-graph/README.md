@@ -85,7 +85,7 @@ You don't write any rendering or layout code yourself. That makes it a drop-in *
 - **Themes:** light, dark and **night sky** (twinkling stars, glowing nodes and constellation-like edges). `auto` follows the OS setting. Everything is themeable with CSS custom properties.
 - **Accessibility:** keyboard navigation (works with a Persian keyboard layout too), focusable nodes with ARIA labels, live regions, and `prefers-reduced-motion` support.
 - **Responsive:** on narrow containers the panel becomes a mobile bottom sheet, and touch gestures are supported.
-- **Languages:** Persian (RTL) and English (LTR) built in, and every string is overridable. Mixed-direction titles render correctly.
+- **Languages:** English (LTR, default) and Persian (RTL) built in, and every string is overridable. Mixed-direction titles render correctly.
 - **Modern Angular:** a standalone, signal-based, `OnPush` component that works zoneless and is SSR-safe. It has two-way bindings with `model()`.
 - **Lightweight:** no runtime dependencies. The rendering engine is plain TypeScript + SVG.
 
@@ -93,9 +93,13 @@ You don't write any rendering or layout code yourself. That makes it a drop-in *
 
 | Shortest path between two entries (night sky) | Cluster layout (dark theme) | Timeline layout with filters |
 | --- | --- | --- |
-| ![Knowledge graph viewer highlighting the shortest path between two entities on a starry night-sky theme](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/path-night-sky.png) | ![Angular graph visualization grouped into clusters by entity type, dark theme](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/clusters-dark.png) | ![Knowledge graph timeline layout with swim-lanes per type and the filter panel open](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/timeline-filters.png) |
-| **Orbit layout (night sky)** | **Arc diagram (English, LTR)** | **Mobile bottom sheet** |
-| ![Radial orbit layout of a knowledge graph around a focus node](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/orbit-night-sky.png) | ![Arc diagram view of an Angular network graph with an English interface](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/arcs-english.png) | ![Responsive knowledge graph viewer on a phone with a bottom sheet](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/mobile.png) |
+| ![Knowledge graph viewer highlighting the shortest path between Alan Turing and Tim Berners-Lee on a starry night-sky theme](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/path-night-sky.png) | ![Angular graph visualization grouped into clusters by entity type, dark theme](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/clusters-dark.png) | ![Knowledge graph timeline layout with swim-lanes per type, labelled years and the filter panel open](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/timeline-filters.png) |
+| **Orbit layout (night sky)** | **Arc diagram** | **Guided tour** |
+| ![Radial orbit layout of a knowledge graph around a focus node](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/orbit-night-sky.png) | ![Arc diagram view of an Angular network graph](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/arcs.png) | ![Guided tour stepping through the strongest relationships of the focus node](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/tour-night-sky.png) |
+| **Mobile bottom sheet** | **Right-to-left interface (Persian)** | |
+| ![Responsive knowledge graph viewer on a phone with a bottom sheet](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/mobile.png) | ![Knowledge graph viewer with a right-to-left Persian interface](https://raw.githubusercontent.com/F-mahmoodi/angular-knowledge-graph/main/docs/screenshots/rtl-persian.png) | |
+
+*Sample data in the screenshots: a small knowledge graph of the history of computing, centred on Alan Turing.*
 
 ## Installation
 
@@ -125,7 +129,6 @@ import {
   template: `
     <ngx-constellation
       style="height: 100vh"
-      locale="en"
       [data]="graph"
       [types]="types"
       [(focus)]="focus"
@@ -200,7 +203,7 @@ Edges are undirected. Duplicate edges, self-loops and edges that point to unknow
 | `data` | `ConstellationData` | **required** | Nodes and edges to display. |
 | `types` | `ConstellationType[]` | `[]` | Labels and colors per type. The order is used by clusters, lanes and the legend. |
 | `eras` | `ConstellationEra[]` | `[]` | Labelled ticks on the timeline axis. |
-| `locale` | `'fa' \| 'en'` | `'fa'` | Built-in UI language. |
+| `locale` | `'en' \| 'fa'` | `'en'` | Built-in UI language: English (LTR) or Persian (RTL). |
 | `strings` | `Partial<ConstellationStrings>` | `null` | Override any UI text (see `STRINGS_EN` / `STRINGS_FA`). |
 | `dir` | `'rtl' \| 'ltr' \| null` | locale's | Text direction. |
 | `brand` | `string` | `''` | Title at the start of the toolbar. |
@@ -303,11 +306,12 @@ strings = { ...STRINGS_EN, tourStart: 'Take the tour', searchPlaceholder: 'Find 
 ```
 
 ```html
-<ngx-constellation [data]="graph" locale="en" [strings]="strings" />
+<ngx-constellation [data]="graph" [strings]="strings" />
+<ngx-constellation [data]="graph" locale="fa" />  <!-- Persian, right-to-left -->
 ```
 
-- **Persian (`fa`):** right-to-left, with Persian digits.
-- **English (`en`):** left-to-right.
+- **English (`en`, default):** left-to-right.
+- **Persian (`fa`):** right-to-left, with Persian digits and a Persian keyboard layout for shortcuts.
 - **Mixed data:** each node title picks its own text direction, so Persian or Arabic titles display correctly inside an English UI, and the other way round.
 
 ## Keyboard shortcuts and gestures
@@ -357,7 +361,7 @@ It is designed for *focused viewing*: it shows the neighbourhood of a focus node
 Yes. It renders only in the browser (`afterNextRender`), works without zone.js, and is a standalone component.
 
 **Can I use it with right-to-left languages?**
-Yes. RTL is a first-class mode, and Persian is the default locale. Use `locale="en"` for English.
+Yes. RTL is a first-class mode: use `locale="fa"` for the built-in Persian interface, or `dir="rtl"` with your own `strings` for another language.
 
 ## Development
 
@@ -369,7 +373,7 @@ npm run build         # library (dist/angular-knowledge-graph) + demo (dist/demo
 npm run pack:lib      # build and pack the library as a .tgz
 ```
 
-Open the demo with `?lang=en` for the English/LTR interface.
+Open the demo with `?lang=fa` for the Persian/RTL interface.
 
 ```
 projects/
@@ -381,7 +385,7 @@ projects/
 │     ├─ graph.ts                 graph index, BFS shortest path, visibility rules (pure, unit-tested)
 │     ├─ models.ts                public types
 │     └─ strings.ts               Persian & English UI texts
-└─ demo/                         demo app (sample data around the Nojoom entry «نوح (قرآن)»)
+└─ demo/                         demo app (sample data: history of computing)
 ```
 
 **Publishing to npm:** `npm run build:lib && cd dist/angular-knowledge-graph && npm publish`
@@ -390,12 +394,9 @@ projects/
 
 Contributions are welcome. See [CONTRIBUTING.md](https://github.com/F-mahmoodi/angular-knowledge-graph/blob/main/CONTRIBUTING.md) and [CHANGELOG.md](https://github.com/F-mahmoodi/angular-knowledge-graph/blob/main/CHANGELOG.md).
 
-## Data credits
+## Demo data
 
-The demo graph is built around the entry **«نوح (قرآن)»** of the [Nojoom](https://nojoom.najm.ac) encyclopedia:
-
-- Its 12 direct links, tagged *مدخل واقعی*, come from the public Nojoom API.
-- The other nodes and links, tagged *نمونه*, are illustrative samples.
+The demo uses a small, hand-written knowledge graph of **the history of computing** (people, machines, ideas, papers, places and events around Alan Turing). Summaries are written for the demo, and each node links to its Wikipedia article.
 
 ## License
 
@@ -427,9 +428,9 @@ npm install angular-knowledge-graph
 ```
 
 ```html
-<ngx-constellation style="height: 100vh" [data]="data" [types]="types" [(focus)]="focus" />
+<ngx-constellation style="height: 100vh" locale="fa" [data]="data" [types]="types" [(focus)]="focus" />
 ```
 
-زبان پیش‌فرض فارسی است (`locale="fa"`). با `locale="en"` رابط کاربری انگلیسی و چپ‌به‌راست می‌شود. همه‌ی متن‌ها با ورودی `strings` قابل تغییرند.
+زبان پیش‌فرض انگلیسی است. با `locale="fa"` رابط کاربری فارسی و راست‌به‌چپ می‌شود. همه‌ی متن‌ها با ورودی `strings` قابل تغییرند.
 
-برای اجرای نمونه: `npm ci` و سپس `npm start`.
+برای اجرای نمونه: `npm ci` و سپس `npm start` (برای رابط فارسی، `?lang=fa` را به آدرس اضافه کنید).

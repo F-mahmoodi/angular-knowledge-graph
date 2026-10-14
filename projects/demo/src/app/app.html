@@ -3,19 +3,11 @@
   [types]="types"
   [eras]="eras"
   [locale]="lang"
+  [strings]="strings"
   [brand]="brand"
   [note]="note"
   [(focus)]="focus"
   [(layout)]="layout"
-  [features]="{ globalShortcuts: true, openButton: false }"
-  [detailTemplate]="detail"
+  [features]="{ globalShortcuts: true }"
   persistKey="angular-knowledge-graph-demo"
 />
-
-<ng-template #detail let-node>
-  @if (node.data?.nojoomId; as id) {
-    <p class="demo-id">
-      {{ lang === 'en' ? 'Nojoom id:' : 'شناسه‌ی نجوم:' }} <code>{{ id }}</code>
-    </p>
-  }
-</ng-template>

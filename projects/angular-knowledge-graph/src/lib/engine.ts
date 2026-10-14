@@ -900,7 +900,7 @@ export class ConstellationEngine {
       if (this.ph[d] == null) this.ph[d] = 0;
       const ph = this.ph[d];
       const n = ring.length;
-      R = d === 1 ? Math.max(240, (n * 86) / TAU) : Math.max(R + 190, (n * 66) / TAU);
+      R = d === 1 ? Math.max(240, (n * 98) / TAU) : Math.max(R + 190, (n * 72) / TAU);
       if (d === 1) {
         ring.sort(
           (a, b) =>
@@ -954,7 +954,7 @@ export class ConstellationEngine {
     });
     const ks = this.g.typeOrder.filter((k) => G[k]);
     const m = ks.length;
-    const Rc = (k: string) => 30 + Math.sqrt(G[k].length) * 40;
+    const Rc = (k: string) => 30 + Math.sqrt(G[k].length) * 50;
     const maxRc = Math.max(0, ...ks.map(Rc));
     const D = m > 1 ? Math.max(250, (maxRc + 44) / Math.sin(Math.PI / m)) : 240;
     ks.forEach((k, i) => {
@@ -965,7 +965,7 @@ export class ConstellationEngine {
       G[k]
         .sort((p, q) => this.wTo(q) - this.wTo(p))
         .forEach((v, j) => {
-          const rr = G[k].length === 1 ? 0 : 40 * Math.sqrt(j + 0.5);
+          const rr = G[k].length === 1 ? 0 : 50 * Math.sqrt(j + 0.5);
           const aa = j * 2.39996 + a;
           v.tx = cx + Math.cos(aa) * rr;
           v.ty = cy + Math.sin(aa) * rr;
@@ -982,11 +982,26 @@ export class ConstellationEngine {
     const S = this.h.strings();
     const rtl = S.dir === 'rtl';
     const sgn = rtl ? -1 : 1;
-    const range = this.g.eraRange;
-    const mid = range ? (range[0] + range[1]) / 2 : 0;
+    // Axis = half linear time, half ordinal (equal spacing per distinct date of the visible nodes),
+    // so both "1 to 8" and "1791 to 2021 with a dense 1940s" spread out readably.
+    const vals = [
+      ...new Set(this.live.map((v) => this.g.eraOf(v.id)).filter((x): x is number => x != null)),
+    ].sort((a, b) => a - b);
+    const range: [number, number] | null = vals.length ? [vals[0], vals[vals.length - 1]] : null;
     const span = range ? Math.max(range[1] - range[0], 1e-9) : 1;
-    const scale = range ? Math.max(90, 1250 / span) : 0;
-    const eraX = (e: number) => sgn * (e - mid) * scale;
+    const W = Math.max(1100, vals.length * 70);
+    const rankOf = (e: number) => {
+      if (vals.length < 2) return 0.5;
+      if (e <= vals[0]) return 0;
+      if (e >= vals[vals.length - 1]) return 1;
+      let i = 0;
+      while (vals[i + 1] < e) i++;
+      return (i + (e - vals[i]) / (vals[i + 1] - vals[i])) / (vals.length - 1);
+    };
+    const eraX = (e: number) => {
+      const lin = range ? (e - range[0]) / span : 0.5;
+      return sgn * ((lin + rankOf(e)) / 2 - 0.5) * W;
+    };
     const ks = this.g.typeOrder.filter((k) => this.live.some((v) => v.n.type === k));
     const LH = 118;
     const y0 = (-(ks.length - 1) / 2) * LH;

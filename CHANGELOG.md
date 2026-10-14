@@ -14,6 +14,6 @@ All notable changes to this project are documented here. The format follows
 - Expand/collapse hidden neighbours, re-centering with a breadcrumb trail, shortest-path finding, search that reveals hidden nodes, guided tour.
 - Filters by type, depth and minimum strength; smart label modes; minimap; fullscreen.
 - Keyboard shortcuts (also with a Persian keyboard layout), touch gestures, ARIA labels, reduced-motion support.
-- Persian (RTL) and English (LTR) UI strings, overridable; per-text direction for mixed-language data.
+- English (default, LTR) and Persian (RTL) UI strings, overridable; per-text direction for mixed-language data.
 - Bottom-sheet panel on narrow containers.
-- Demo app with sample data around the Nojoom entry «نوح (قرآن)».
+- Demo app with a sample knowledge graph of the history of computing.
