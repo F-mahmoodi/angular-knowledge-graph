@@ -6,20 +6,20 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "ngx-constellation": {
+    "angular-knowledge-graph": {
       "projectType": "library",
-      "root": "projects/ngx-constellation",
-      "sourceRoot": "projects/ngx-constellation/src",
+      "root": "projects/angular-knowledge-graph",
+      "sourceRoot": "projects/angular-knowledge-graph/src",
       "prefix": "ngx",
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
           "configurations": {
             "production": {
-              "tsConfig": "projects/ngx-constellation/tsconfig.lib.prod.json"
+              "tsConfig": "projects/angular-knowledge-graph/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/ngx-constellation/tsconfig.lib.json"
+              "tsConfig": "projects/angular-knowledge-graph/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -27,7 +27,7 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/ngx-constellation/tsconfig.spec.json"
+            "tsConfig": "projects/angular-knowledge-graph/tsconfig.spec.json"
           }
         }
       }

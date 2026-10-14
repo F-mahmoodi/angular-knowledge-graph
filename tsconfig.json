@@ -9,7 +9,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "ngx-constellation": ["./dist/ngx-constellation"]
+      "angular-knowledge-graph": ["./dist/angular-knowledge-graph"]
     },
     "skipLibCheck": true,
     "isolatedModules": true,
@@ -28,10 +28,10 @@
   "files": [],
   "references": [
     {
-      "path": "./projects/ngx-constellation/tsconfig.lib.json"
+      "path": "./projects/angular-knowledge-graph/tsconfig.lib.json"
     },
     {
-      "path": "./projects/ngx-constellation/tsconfig.spec.json"
+      "path": "./projects/angular-knowledge-graph/tsconfig.spec.json"
     },
     {
       "path": "./projects/demo/tsconfig.app.json"

@@ -1,4 +1,4 @@
-import { ConstellationData, ConstellationEra, ConstellationType } from 'ngx-constellation';
+import { ConstellationData, ConstellationEra, ConstellationType } from 'angular-knowledge-graph';
 
 /**
  * Sample data around the entry «نوح (قرآن)» of the Nojoom encyclopedia.

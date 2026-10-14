@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { LayoutName, NgxConstellation } from 'ngx-constellation';
+import { LayoutName, NgxConstellation } from 'angular-knowledge-graph';
 import { ERAS, NOAH_GRAPH, TYPES } from './data';
 
 /** Add `?lang=en` to the URL to see the English / left-to-right UI. */

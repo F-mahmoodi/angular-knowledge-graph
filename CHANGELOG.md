@@ -7,7 +7,7 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
-- `<ngx-constellation>` standalone Angular component (Angular 22, signals, zoneless-friendly).
+- `angular-knowledge-graph` package with the `<ngx-constellation>` standalone Angular knowledge graph viewer component (Angular 22, signals, zoneless-friendly).
 - Five animated layouts: force, orbit, clusters, timeline (with eras and swim-lanes), arcs.
 - Light, dark and night-sky themes; `auto` follows the OS. Theming through `--nc-*` CSS custom properties.
 - Details panel with relation label and strength, links grouped by type, custom `detailTemplate`.

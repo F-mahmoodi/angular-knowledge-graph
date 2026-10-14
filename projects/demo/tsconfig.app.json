@@ -4,7 +4,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "ngx-constellation": ["../ngx-constellation/src/public-api.ts"]
+      "angular-knowledge-graph": ["../angular-knowledge-graph/src/public-api.ts"]
     },
     "types": []
   },

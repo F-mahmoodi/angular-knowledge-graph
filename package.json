@@ -1,17 +1,17 @@
 {
-  "name": "ngx-constellation",
+  "name": "angular-knowledge-graph",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve demo",
     "build": "npm run build:lib && npm run build:demo",
-    "build:lib": "ng build ngx-constellation",
+    "build:lib": "ng build angular-knowledge-graph",
     "build:demo": "ng build demo",
-    "watch:lib": "ng build ngx-constellation --watch --configuration development",
-    "test": "ng test ngx-constellation --watch=false && ng test demo --watch=false",
-    "test:watch": "ng test ngx-constellation",
+    "watch:lib": "ng build angular-knowledge-graph --watch --configuration development",
+    "test": "ng test angular-knowledge-graph --watch=false && ng test demo --watch=false",
+    "test:watch": "ng test angular-knowledge-graph",
     "format": "prettier --write \"projects/**/*.{ts,html,css}\" \"*.md\"",
-    "pack:lib": "npm run build:lib && npm pack ./dist/ngx-constellation"
+    "pack:lib": "npm run build:lib && npm pack ./dist/angular-knowledge-graph"
   },
   "private": true,
   "packageManager": "npm@11.16.0",
@@ -35,6 +35,10 @@
     "typescript": "~6.0.2",
     "vitest": "^5.0.0"
   },
-  "description": "Workspace of ngx-constellation, an interactive knowledge-graph explorer for Angular.",
-  "license": "MIT"
+  "description": "Workspace of angular-knowledge-graph, a knowledge graph viewer component for Angular.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/F-mahmoodi/angular-knowledge-graph.git"
+  }
 }

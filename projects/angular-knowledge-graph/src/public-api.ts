@@ -1,5 +1,5 @@
 /*
- * Public API Surface of ngx-constellation
+ * Public API Surface of angular-knowledge-graph
  */
 
 export * from './lib/ngx-constellation';

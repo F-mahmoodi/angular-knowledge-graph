@@ -1,0 +1,40 @@
+{
+  "name": "angular-knowledge-graph",
+  "version": "0.1.0",
+  "description": "Knowledge graph viewer component for Angular — an interactive graph visualization (D3 alternative) with force-directed, orbit, cluster, timeline and arc layouts, search, path highlighting, dark & night-sky themes and RTL support.",
+  "keywords": [
+    "angular",
+    "angular-component",
+    "knowledge-graph",
+    "knowledge-graph-viewer",
+    "graph-viewer",
+    "graph-visualization",
+    "network-graph",
+    "network-visualization",
+    "force-directed-graph",
+    "d3-alternative",
+    "data-visualization",
+    "svg",
+    "rtl",
+    "persian",
+    "typescript"
+  ],
+  "homepage": "https://github.com/F-mahmoodi/angular-knowledge-graph#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/F-mahmoodi/angular-knowledge-graph.git"
+  },
+  "bugs": {
+    "url": "https://github.com/F-mahmoodi/angular-knowledge-graph/issues"
+  },
+  "license": "MIT",
+  "author": "Farnaz",
+  "peerDependencies": {
+    "@angular/common": "^22.2.0",
+    "@angular/core": "^22.2.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}

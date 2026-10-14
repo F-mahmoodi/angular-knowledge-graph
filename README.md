@@ -1,63 +1,123 @@
-# ngx-constellation ✦
+# Angular Knowledge Graph Viewer — Interactive Graph Visualization Component (D3 Alternative)
 
-**An interactive, explorable knowledge-graph viewer for Angular.**
-Five layouts, three themes (including a starry *night sky*), a details panel, search, shortest-path finding, a guided tour, filters, minimap, keyboard navigation, touch gestures, and full right-to-left (Persian) support.
+[![CI](https://github.com/F-mahmoodi/angular-knowledge-graph/actions/workflows/ci.yml/badge.svg)](https://github.com/F-mahmoodi/angular-knowledge-graph/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+![Angular 22](https://img.shields.io/badge/Angular-22-dd0031.svg)
+![No dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)
 
-![Force layout, light theme](docs/screenshots/force-light.png)
+**angular-knowledge-graph** is an open-source **knowledge graph viewer for Angular**: a single, ready-made component, `<ngx-constellation>`, that **displays a graph of nodes and relationships** and lets users explore it interactively.
 
-| Night sky · path between two entries | Clusters · dark | Timeline · filters |
-| --- | --- | --- |
-| ![](docs/screenshots/path-night-sky.png) | ![](docs/screenshots/clusters-dark.png) | ![](docs/screenshots/timeline-filters.png) |
-| **Orbit · night sky** | **Arcs · English (LTR)** | **Mobile** |
-| ![](docs/screenshots/orbit-night-sky.png) | ![](docs/screenshots/arcs-english.png) | ![](docs/screenshots/mobile.png) |
+Pass it `{ nodes, edges }` and you get:
 
-It was first built for the entity pages of the **Nojoom** Islamic encyclopedia, and works with any graph of entries and relations.
+- a polished, interactive **graph visualization** with **five layouts** (force-directed, orbit, clusters, timeline, arcs),
+- search, shortest-path highlighting, step-by-step neighbour expansion and a guided tour,
+- light, dark and *night-sky* themes,
+- full **RTL / Persian** support.
+
+You don't write any rendering or layout code yourself. That makes it a drop-in **alternative to building a graph view with D3**. It has **zero dependencies** beyond Angular, and is written in TypeScript with signals.
+
+**[▶ Live demo](https://f-mahmoodi.github.io/angular-knowledge-graph/)** · [Installation](#installation) · [Quick start](#quick-start-display-a-knowledge-graph-in-angular) · [API](#api-reference) · [FAQ](#faq)
+
+![Angular knowledge graph viewer: force-directed graph visualization with a details panel, search and filters](docs/screenshots/force-light.png)
 
 ---
 
+## Contents
+
+- [What it is, and what it isn't](#what-it-is-and-what-it-isnt)
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Installation](#installation)
+- [Quick start](#quick-start-display-a-knowledge-graph-in-angular)
+- [Graph data model](#graph-data-model-nodes-and-edges)
+- [API reference](#api-reference)
+- [Theming](#theming)
+- [Internationalization and RTL](#internationalization-and-rtl)
+- [Keyboard shortcuts and gestures](#keyboard-shortcuts-and-gestures)
+- [Use cases](#use-cases)
+- [FAQ](#faq)
+- [Development](#development)
+- [راهنمای فارسی](#راهنمای-فارسی)
+
+## What it is, and what it isn't
+
+**It is a viewer component.** It renders a graph you give it, and lets people explore that view interactively:
+
+- select nodes, read why they are related, and expand hidden neighbours;
+- re-center on a node, find paths, search and filter;
+- switch between layouts.
+
+**It is not** a graph database, a query engine, or a graph editor. Your app loads the data (from an API, a JSON file, a triple store…) and passes `{ nodes, edges }` to the component. Users never change your data. They only change *what they see*.
+
+**Compared with D3.** With D3 you assemble a graph view yourself:
+
+- force simulation,
+- SVG rendering,
+- zoom and pan,
+- labels, tooltips, filters and a details panel,
+- responsive behaviour and accessibility.
+
+**angular-knowledge-graph** packages all of that as one Angular component with inputs, outputs and two-way bindings, styled and ready to use. If you need a bespoke chart unlike anything here, D3 is still the right tool. If you need a good-looking, explorable knowledge-graph view in an Angular app, this saves you the work.
+
 ## Features
 
-- **Five layouts, animated between each other.** Every layout shows the same network, and nodes glide to their new places.
-  - **Force:** an organic, physics-based layout. Drag a node to pin it.
-  - **Orbit:** the focus is the sun. Direct links sit on the first ring and farther nodes on outer rings, slowly orbiting.
-  - **Clusters:** nodes are grouped into coloured bubbles by type.
-  - **Timeline:** nodes are placed on a time axis, with one swim-lane per type and labelled eras.
-  - **Arcs:** all nodes sit on one line, and arcs show who connects to whom.
-- **Three themes:** light, dark, and *night sky* (twinkling stars with glowing nodes and constellation-like edges). `auto` follows the OS.
-- **Exploration tools:**
-  - **Details panel:** shows why a node relates to the focus, the relation strength, and all links grouped by type.
-  - **+n badges:** a badge means hidden neighbours. Double-click a node to expand them, and double-click again to collapse.
-  - **Re-centering:** make any node the focus. A breadcrumb trail lets you go back.
-  - **Shortest path:** Shift+click, or use "Path to…". Hidden intermediate nodes are revealed.
-  - **Search:** finding a hidden node reveals it together with its path from the focus.
-  - **Guided tour:** auto-plays through the strongest links with captions.
-  - **Filters:** by type, neighbourhood depth (1–3 steps), and minimum link strength. There are also smart label modes.
-- **Navigation:** pan, zoom, pinch, fit-to-view, minimap and fullscreen.
-- **Keyboard:** see the [shortcuts](#keyboard--gestures) section.
-- **Accessibility:** focusable nodes with ARIA labels and live regions, and `prefers-reduced-motion` is respected.
-- **Responsive:** below 900px of *container* width, the panel becomes a bottom sheet.
-- **i18n:** Persian (RTL) and English (LTR) built in, and every string is overridable. Mixed-direction titles render correctly.
-- **Small footprint:**
-  - Zero runtime dependencies besides Angular.
-  - A standalone, signal-based, `OnPush`, zoneless-friendly component.
-  - SSR-safe: it renders only in the browser.
+**Five graph layouts, animated between each other**
+
+- **Force-directed graph:** organic, physics-based layout. Drag a node to pin it.
+- **Orbit (radial):** the focus node is the sun. Direct links orbit on the first ring and farther nodes on outer rings.
+- **Clusters:** nodes are grouped into coloured bubbles by type or category.
+- **Timeline:** nodes on a time axis, with one swim-lane per type and labelled eras.
+- **Arc diagram:** all nodes on one line, and arcs show the connections.
+
+**Interactive exploration of the view**
+
+- Details panel that shows the relation label, the relation strength, and all links grouped by type.
+- `+n` badges for hidden neighbours. Double-click to show them, double-click again to hide.
+- Re-center on any node, with a breadcrumb trail and a back button.
+- Shortest-path highlighting (Shift+click or "Path to…").
+- Search with suggestions. Hidden results are revealed together with their path.
+- Guided tour that auto-plays through the strongest relationships, with captions.
+- Filters by type, neighbourhood depth (1–3 steps) and minimum link strength, plus smart label modes.
+- Minimap, zoom, pan, pinch, fit-to-view and fullscreen.
+
+**Design and quality**
+
+- **Themes:** light, dark and **night sky** (twinkling stars, glowing nodes and constellation-like edges). `auto` follows the OS setting. Everything is themeable with CSS custom properties.
+- **Accessibility:** keyboard navigation (works with a Persian keyboard layout too), focusable nodes with ARIA labels, live regions, and `prefers-reduced-motion` support.
+- **Responsive:** on narrow containers the panel becomes a mobile bottom sheet, and touch gestures are supported.
+- **Languages:** Persian (RTL) and English (LTR) built in, and every string is overridable. Mixed-direction titles render correctly.
+- **Modern Angular:** a standalone, signal-based, `OnPush` component that works zoneless and is SSR-safe. It has two-way bindings with `model()`.
+- **Lightweight:** no runtime dependencies. The rendering engine is plain TypeScript + SVG.
+
+## Screenshots
+
+| Shortest path between two entries (night sky) | Cluster layout (dark theme) | Timeline layout with filters |
+| --- | --- | --- |
+| ![Knowledge graph viewer highlighting the shortest path between two entities on a starry night-sky theme](docs/screenshots/path-night-sky.png) | ![Angular graph visualization grouped into clusters by entity type, dark theme](docs/screenshots/clusters-dark.png) | ![Knowledge graph timeline layout with swim-lanes per type and the filter panel open](docs/screenshots/timeline-filters.png) |
+| **Orbit layout (night sky)** | **Arc diagram (English, LTR)** | **Mobile bottom sheet** |
+| ![Radial orbit layout of a knowledge graph around a focus node](docs/screenshots/orbit-night-sky.png) | ![Arc diagram view of an Angular network graph with an English interface](docs/screenshots/arcs-english.png) | ![Responsive knowledge graph viewer on a phone with a bottom sheet](docs/screenshots/mobile.png) |
 
 ## Installation
 
 ```bash
-npm install ngx-constellation
+npm install angular-knowledge-graph
 ```
 
-Peer dependencies: `@angular/core` and `@angular/common` **≥ 22.2**.
+Requires Angular **22.2+** (`@angular/core`, `@angular/common`).
 
-> Until the package is published to npm, build it from this repository:
-> `npm ci && npm run build:lib && npm pack ./dist/ngx-constellation`, then `npm install path/to/ngx-constellation-0.1.0.tgz` in your app.
+> Until the first npm release, install it from source:
+> `npm ci && npm run pack:lib`, then `npm install path/to/angular-knowledge-graph-0.1.0.tgz` in your app.
 
-## Quick start
+## Quick start: display a knowledge graph in Angular
 
 ```ts
 import { Component, signal } from '@angular/core';
-import { ConstellationData, ConstellationNode, ConstellationType, NgxConstellation } from 'ngx-constellation';
+import {
+  ConstellationData,
+  ConstellationNode,
+  ConstellationType,
+  NgxConstellation,
+} from 'angular-knowledge-graph';
 
 @Component({
   selector: 'app-root',
@@ -66,7 +126,7 @@ import { ConstellationData, ConstellationNode, ConstellationType, NgxConstellati
     <ngx-constellation
       style="height: 100vh"
       locale="en"
-      [data]="data"
+      [data]="graph"
       [types]="types"
       [(focus)]="focus"
       (nodeSelect)="onSelect($event)"
@@ -75,11 +135,13 @@ import { ConstellationData, ConstellationNode, ConstellationType, NgxConstellati
 })
 export class App {
   focus = signal<string | null>('sun');
+
   types: ConstellationType[] = [
     { key: 'star', label: 'Stars', color: '#d97a2b' },
     { key: 'planet', label: 'Planets', color: '#3a7cc4' },
   ];
-  data: ConstellationData = {
+
+  graph: ConstellationData = {
     nodes: [
       { id: 'sun', title: 'Sun', type: 'star', snippet: 'The star at the center of the Solar System.' },
       { id: 'earth', title: 'Earth', type: 'planet' },
@@ -91,23 +153,24 @@ export class App {
       { source: 'earth', target: 'mars', weight: 1, label: 'neighbours' },
     ],
   };
+
   onSelect(node: ConstellationNode | null) {
-    console.log(node);
+    console.log('selected', node);
   }
 }
 ```
 
-> **Give the element a height.** It fills its container (`height: 100%`, min 420px).
+> **Give the element a height.** The graph viewer fills its container (`height: 100%`, min 420px).
 
-## Data model
+## Graph data model: nodes and edges
 
 ```ts
 interface ConstellationNode {
   id: string;
   title: string;
-  type: string;           // matches ConstellationType.key (unknown types get automatic colors)
-  era?: number | null;    // position on the timeline (any numeric scale)
-  snippet?: string;       // description in the panel
+  type: string;           // category; matches ConstellationType.key (unknown types get automatic colors)
+  era?: number | null;    // position on the timeline (any numeric scale: years, centuries, era index…)
+  snippet?: string;       // short description in the details panel
   image?: string;         // absolute image URL shown in the panel
   url?: string;           // target of the "open entry" button
   tags?: string[];        // small tags next to the type pill
@@ -118,7 +181,7 @@ interface ConstellationEdge {
   source: string;
   target: string;
   weight?: number;        // relation strength (default 1): thickness, distance, filtering
-  label?: string;         // why they are related; shown on the edge and in the panel
+  label?: string;         // why the two nodes are related; shown on the edge and in the panel
   data?: unknown;
 }
 
@@ -126,34 +189,34 @@ interface ConstellationType { key: string; label: string; color?: string; darkCo
 interface ConstellationEra  { value: number; label: string }
 ```
 
-Edges are undirected. Duplicate edges, self-loops and edges that point to unknown nodes are ignored.
+Edges are undirected. Duplicate edges, self-loops and edges that point to unknown nodes are ignored, so you can pass raw API data directly.
 
-## API
+## API reference
 
 ### Inputs
 
 | Input | Type | Default | Description |
 | --- | --- | --- | --- |
-| `data` | `ConstellationData` | **required** | Nodes and edges. |
+| `data` | `ConstellationData` | **required** | Nodes and edges to display. |
 | `types` | `ConstellationType[]` | `[]` | Labels and colors per type. The order is used by clusters, lanes and the legend. |
 | `eras` | `ConstellationEra[]` | `[]` | Labelled ticks on the timeline axis. |
 | `locale` | `'fa' \| 'en'` | `'fa'` | Built-in UI language. |
-| `strings` | `Partial<ConstellationStrings>` | `null` | Override any UI text. See `STRINGS_EN` / `STRINGS_FA`. |
+| `strings` | `Partial<ConstellationStrings>` | `null` | Override any UI text (see `STRINGS_EN` / `STRINGS_FA`). |
 | `dir` | `'rtl' \| 'ltr' \| null` | locale's | Text direction. |
 | `brand` | `string` | `''` | Title at the start of the toolbar. |
-| `note` | `string` | `''` | Footnote at the bottom of the filters card. |
-| `features` | `Partial<ConstellationFeatures>` | all on | Toggle parts of the UI ([see below](#features-flags)). |
+| `note` | `string` | `''` | Footnote in the filters card. |
+| `features` | `Partial<ConstellationFeatures>` | all on | Toggle parts of the UI ([feature flags](#feature-flags)). |
 | `tourDuration` | `number` | `4800` | Milliseconds per step of the guided tour. |
 | `maxLabelLength` | `number` | `22` | Longer node labels are truncated. |
-| `persistKey` | `string \| null` | `null` | Remember theme and layout in `localStorage` under this key. |
+| `persistKey` | `string \| null` | `null` | Remember theme and layout in `localStorage`. |
 | `showHint` | `boolean` | `true` | Show a gesture hint once on start. |
-| `detailTemplate` | `TemplateRef<ConstellationDetailContext>` | `null` | Extra content in the details panel. |
+| `detailTemplate` | `TemplateRef<ConstellationDetailContext>` | `null` | Custom content in the details panel. |
 
 ### Two-way bindings (`model()`)
 
 | Model | Type | Default | Description |
 | --- | --- | --- | --- |
-| `focus` | `string \| null` | most connected node | Node at the center. |
+| `focus` | `string \| null` | most connected node | Node at the center of the view. |
 | `selected` | `string \| null` | `null` | Selected node. Setting a hidden node reveals it with its path. |
 | `layout` | `'force' \| 'orbit' \| 'cluster' \| 'timeline' \| 'arc'` | `'force'` | Current layout. |
 | `theme` | `'auto' \| 'light' \| 'dark' \| 'sky'` | `'auto'` | Current theme. |
@@ -161,7 +224,7 @@ Edges are undirected. Duplicate edges, self-loops and edges that point to unknow
 | `labels` | `'smart' \| 'all' \| 'none'` | `'smart'` | Label visibility. *smart* hides minor labels when zoomed out. |
 
 ```html
-<ngx-constellation [data]="data" [(focus)]="focus" [(layout)]="layout" [(theme)]="theme" />
+<ngx-constellation [data]="graph" [(focus)]="focus" [(layout)]="layout" [(theme)]="theme" />
 ```
 
 ### Outputs
@@ -170,7 +233,7 @@ Edges are undirected. Duplicate edges, self-loops and edges that point to unknow
 | --- | --- | --- |
 | `nodeSelect` | `ConstellationNode \| null` | The selection changes. |
 | `nodeOpen` | `ConstellationNode` | The "open entry" button is used. |
-| `nodeExpand` | `{ node, added }` | Hidden neighbours were expanded. |
+| `nodeExpand` | `{ node, added }` | Hidden neighbours were shown. |
 | `pathChange` | `ConstellationNode[] \| null` | A path is highlighted or cleared. |
 
 The models also emit `focusChange`, `selectedChange`, `layoutChange`, `themeChange`, `depthChange` and `labelsChange`.
@@ -181,11 +244,11 @@ Get the component with `viewChild(NgxConstellation)`:
 
 `fit()`, `zoomIn()`, `zoomOut()`, `recenter(id)`, `reveal(id)`, `showPath(from, to)`, `startTour()`, `stopTour()`.
 
-### Features flags
+### Feature flags
 
 ```html
 <ngx-constellation
-  [data]="data"
+  [data]="graph"
   [features]="{ minimap: false, tour: false, globalShortcuts: true, layouts: ['force', 'orbit'] }"
 />
 ```
@@ -196,13 +259,15 @@ Get the component with `viewChild(NgxConstellation)`:
 | `panel` | `true` | Details panel (a bottom sheet on narrow containers). |
 | `filters`, `trail`, `tour`, `minimap`, `zoomControls` | `true` | Overlays on the graph. |
 | `openButton` | `true` | The "open entry" button in the panel. |
-| `globalShortcuts` | `false` | Listen to shortcuts on the whole document, not only when focus is inside the component. |
+| `globalShortcuts` | `false` | Listen to shortcuts on the whole page, not only when focus is inside. |
 | `layouts` | all five | Which layouts are offered, in order. |
+
+Turn off `toolbar`, `panel`, `filters`, `trail`, `tour` and `minimap` to get a minimal, embedded graph view.
 
 ### Custom panel content
 
 ```html
-<ngx-constellation [data]="data" [detailTemplate]="extra" />
+<ngx-constellation [data]="graph" [detailTemplate]="extra" />
 
 <ng-template #extra let-node let-isFocus="isFocus">
   <a [href]="'/entries/' + node.id">Read the full entry</a>
@@ -211,7 +276,7 @@ Get the component with `viewChild(NgxConstellation)`:
 
 ## Theming
 
-The component sets `data-theme="light|dark|sky"` on its host. Every color is a CSS custom property, so you can override any of them:
+The host gets `data-theme="light|dark|sky"`, and every color is a CSS custom property:
 
 ```css
 ngx-constellation[data-theme='light'] {
@@ -225,30 +290,32 @@ ngx-constellation {
 }
 ```
 
-Available tokens: `--nc-bg`, `--nc-surface`, `--nc-surface-2`, `--nc-ink`, `--nc-muted`, `--nc-line`, `--nc-accent`, `--nc-accent-ink`, `--nc-accent-soft`, `--nc-stage-bg`, `--nc-edge`, `--nc-halo`, `--nc-node-stroke`, `--nc-label`, `--nc-focus-a`, `--nc-focus-b`, `--nc-focus-ring`, `--nc-orbit`, `--nc-shadow`, `--nc-font`, `--nc-radius`.
+Tokens: `--nc-bg`, `--nc-surface`, `--nc-surface-2`, `--nc-ink`, `--nc-muted`, `--nc-line`, `--nc-accent`, `--nc-accent-ink`, `--nc-accent-soft`, `--nc-stage-bg`, `--nc-edge`, `--nc-halo`, `--nc-node-stroke`, `--nc-label`, `--nc-focus-a`, `--nc-focus-b`, `--nc-focus-ring`, `--nc-orbit`, `--nc-shadow`, `--nc-font`, `--nc-radius`.
 
-Type colors come from the `types` input (`color`, `darkColor`, `skyColor`). The component's styles are global (all scoped under `.ngx-constellation`, prefixed `nc-`), because the graph's SVG nodes are created at runtime.
+Node colors come from the `types` input (`color`, `darkColor`, `skyColor`). Styles are global but scoped under `.ngx-constellation` and prefixed with `nc-`, because the SVG nodes are created at runtime.
 
-## Internationalization
+## Internationalization and RTL
 
 ```ts
-import { STRINGS_EN } from 'ngx-constellation';
+import { STRINGS_EN } from 'angular-knowledge-graph';
 
 strings = { ...STRINGS_EN, tourStart: 'Take the tour', searchPlaceholder: 'Find an entry…' };
 ```
 
 ```html
-<ngx-constellation [data]="data" locale="en" [strings]="strings" />
+<ngx-constellation [data]="graph" locale="en" [strings]="strings" />
 ```
 
-Persian (`fa`) uses Persian digits and RTL. English (`en`) uses LTR. Node titles pick their own direction from their content, so Persian titles render correctly inside an English UI and vice versa.
+- **Persian (`fa`):** right-to-left, with Persian digits.
+- **English (`en`):** left-to-right.
+- **Mixed data:** each node title picks its own text direction, so Persian or Arabic titles display correctly inside an English UI, and the other way round.
 
-## Keyboard & gestures
+## Keyboard shortcuts and gestures
 
 | Input | Action |
 | --- | --- |
 | Click a node | Select it and show its details and links |
-| Double-click / <kbd>Space</kbd> | Expand or collapse hidden neighbours |
+| Double-click / <kbd>Space</kbd> | Show or hide hidden neighbours |
 | <kbd>Enter</kbd> on the selected node | Make it the focus |
 | <kbd>Shift</kbd> + click | Shortest path from the selected node |
 | Drag a node | Move it (pinned in the force layout) |
@@ -258,7 +325,39 @@ Persian (`fa`) uses Persian digits and RTL. English (`en`) uses LTR. Node titles
 | <kbd>/</kbd> · <kbd>F</kbd> · <kbd>T</kbd> · <kbd>M</kbd> · <kbd>?</kbd> | Search · fit · tour · minimap · help |
 | <kbd>Backspace</kbd> · <kbd>Esc</kbd> | Back in the trail · clear selection / path / tour |
 
-Shortcuts also work with a Persian keyboard layout.
+## Use cases
+
+Anywhere an Angular app needs to **show** connected data:
+
+- **Encyclopedias, wikis and knowledge bases:** a "related entries" graph on every article page.
+- **Ontology, taxonomy and thesaurus browsers:** view concepts and their relations.
+- **Digital humanities:** people, places, texts and events on a timeline.
+- **Citation and reference graphs:** papers, authors and sources.
+- **Dependency and service maps:** see what depends on what.
+- **Learning platforms:** topic maps and prerequisite graphs.
+
+## FAQ
+
+**How do I visualize a knowledge graph in Angular?**
+Install `angular-knowledge-graph`, import `NgxConstellation`, and pass `{ nodes, edges }` to `<ngx-constellation [data]>`. See the [quick start](#quick-start-display-a-knowledge-graph-in-angular).
+
+**Is this an alternative to D3 for graphs?**
+Yes, for network and knowledge-graph views. Instead of writing a force simulation, SVG rendering, zoom and interaction code with D3, you use one Angular component with a typed API. It doesn't depend on D3, Cytoscape or any other library.
+
+**Is it a graph viewer or a graph editor?**
+A **viewer**. Users can explore and rearrange the *view* (select, expand, filter, search, change layout), but the component never modifies your data. Your app stays the source of truth.
+
+**Where does the data come from?**
+From your app. Fetch it from any API or file and map it to `{ nodes, edges }`. The component doesn't load or store data itself.
+
+**How large can the graph be?**
+It is designed for *focused viewing*: it shows the neighbourhood of a focus node and reveals more on demand. It stays smooth with dozens to a few hundred visible nodes at a time. The full dataset can be larger, because only the visible part is laid out and rendered.
+
+**Does it work with SSR, zoneless apps and standalone components?**
+Yes. It renders only in the browser (`afterNextRender`), works without zone.js, and is a standalone component.
+
+**Can I use it with right-to-left languages?**
+Yes. RTL is a first-class mode, and Persian is the default locale. Use `locale="en"` for English.
 
 ## Development
 
@@ -266,60 +365,57 @@ Shortcuts also work with a Persian keyboard layout.
 npm ci
 npm start             # demo app on http://localhost:4200 (uses the library sources directly)
 npm test              # unit tests (Vitest)
-npm run build         # library (dist/ngx-constellation) + demo (dist/demo)
-npm run build:lib     # library only
+npm run build         # library (dist/angular-knowledge-graph) + demo (dist/demo)
+npm run pack:lib      # build and pack the library as a .tgz
 ```
 
 Open the demo with `?lang=en` for the English/LTR interface.
 
 ```
 projects/
-├─ ngx-constellation/          the library
+├─ angular-knowledge-graph/      the library
 │  └─ src/lib/
-│     ├─ ngx-constellation.ts   Angular component (signals, inputs/outputs, UI)
+│     ├─ ngx-constellation.ts     Angular component (signals, inputs/outputs, UI)
 │     ├─ ngx-constellation.html / .css
-│     ├─ engine.ts              framework-agnostic scene: SVG rendering, layouts, physics, camera, gestures
-│     ├─ graph.ts               graph index, BFS path, visibility rules (pure, unit-tested)
-│     ├─ models.ts              public types
-│     └─ strings.ts             Persian & English UI texts
-└─ demo/                       demo app (sample data around the Nojoom entry «نوح (قرآن)»)
+│     ├─ engine.ts                framework-agnostic scene: SVG rendering, layouts, physics, camera, gestures
+│     ├─ graph.ts                 graph index, BFS shortest path, visibility rules (pure, unit-tested)
+│     ├─ models.ts                public types
+│     └─ strings.ts               Persian & English UI texts
+└─ demo/                         demo app (sample data around the Nojoom entry «نوح (قرآن)»)
 ```
 
-### Publishing
+**Publishing to npm:** `npm run build:lib && cd dist/angular-knowledge-graph && npm publish`
 
-```bash
-npm run build:lib
-cd dist/ngx-constellation && npm publish
-```
+**Live demo on GitHub Pages:** enable *Settings → Pages → Source: GitHub Actions* once, then run the **Deploy demo** workflow.
 
-### Demo on GitHub Pages
-
-The repository includes a **Deploy demo** workflow. Turn it on once under *Settings → Pages → Source: GitHub Actions*, then run it from the *Actions* tab.
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ## Data credits
 
 The demo graph is built around the entry **«نوح (قرآن)»** of the [Nojoom](https://nojoom.najm.ac) encyclopedia:
 
 - Its 12 direct links, tagged *مدخل واقعی*, come from the public Nojoom API.
-- The other nodes and links, tagged *نمونه*, are illustrative samples added to show what the component can do.
+- The other nodes and links, tagged *نمونه*, are illustrative samples.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © Farnaz
 
 ---
 
 ## راهنمای فارسی
 
-**ngx-constellation** یک کامپوننت Angular برای نمایش و گشت‌وگذار تعاملی در گراف دانش است. پشتیبانی کامل از فارسی و راست‌به‌چپ دارد.
+**angular-knowledge-graph** یک **نمایشگر گراف دانش برای Angular** است: یک کامپوننت آماده که داده‌ی گراف (گره‌ها و یال‌ها) را از برنامه‌ی شما می‌گیرد و آن را به‌صورت تعاملی نمایش می‌دهد. جایگزینی آماده برای ساختن نمای گراف با D3 است.
+
+این کامپوننت فقط نمایش می‌دهد. پایگاه داده یا ویرایشگر نیست و داده‌ی شما را تغییر نمی‌دهد.
 
 - **پنج چیدمان:** نیرومحور، منظومه، خوشه‌ها، خط زمان و کمانی. جابه‌جایی بین آن‌ها با انیمیشن انجام می‌شود.
-- **سه پوسته:** روشن، تیره و آسمان شب (با ستاره‌های چشمک‌زن). حالت `auto` از تنظیم سیستم پیروی می‌کند.
-- **ابزارهای کاوش:**
-  - پنل جزئیات که دلیل و قوت ارتباط هر گره با مرکز را نشان می‌دهد.
-  - گسترش همسایه‌های پنهان با دوبار کلیک.
+- **سه پوسته:** روشن، تیره و آسمان شب. حالت `auto` از تنظیم سیستم پیروی می‌کند.
+- **کاوش در نما:**
+  - پنل جزئیات که دلیل و قوت ارتباط هر گره را نشان می‌دهد.
+  - نمایش همسایه‌های پنهان با دوبار کلیک.
   - مرکز کردن هر گره، همراه با مسیر کاوش برای بازگشت.
-  - پیدا کردن کوتاه‌ترین مسیر بین دو مدخل.
+  - برجسته کردن کوتاه‌ترین مسیر بین دو گره.
   - جستجو، گشت خودکار، و فیلتر بر اساس نوع، عمق و قوت ارتباط.
   - نقشه‌ی کوچک و میان‌برهای صفحه‌کلید (با چیدمان فارسی صفحه‌کلید هم کار می‌کنند).
 - **موبایل:** پنل جزئیات به برگه‌ی کشویی پایین صفحه تبدیل می‌شود.
@@ -327,7 +423,7 @@ The demo graph is built around the entry **«نوح (قرآن)»** of the [Nojoo
 **نصب و استفاده:**
 
 ```bash
-npm install ngx-constellation
+npm install angular-knowledge-graph
 ```
 
 ```html
