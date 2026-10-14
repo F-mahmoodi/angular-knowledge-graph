@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  height: 100dvh;
+}
+
+.demo-id {
+  margin: 0;
+  font-size: 12px;
+  color: var(--nc-muted);
+}
+
+.demo-id code {
+  direction: ltr;
+  unicode-bidi: embed;
+}

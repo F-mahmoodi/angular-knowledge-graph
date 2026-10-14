@@ -1,0 +1,21 @@
+<ngx-constellation
+  [data]="data"
+  [types]="types"
+  [eras]="eras"
+  [locale]="lang"
+  [brand]="brand"
+  [note]="note"
+  [(focus)]="focus"
+  [(layout)]="layout"
+  [features]="{ globalShortcuts: true, openButton: false }"
+  [detailTemplate]="detail"
+  persistKey="ngx-constellation-demo"
+/>
+
+<ng-template #detail let-node>
+  @if (node.data?.nojoomId; as id) {
+    <p class="demo-id">
+      {{ lang === 'en' ? 'Nojoom id:' : 'شناسه‌ی نجوم:' }} <code>{{ id }}</code>
+    </p>
+  }
+</ng-template>

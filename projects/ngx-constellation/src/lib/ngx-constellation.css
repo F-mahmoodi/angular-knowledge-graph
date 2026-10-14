@@ -1,0 +1,1430 @@
+/* ngx-constellation — all rules are scoped under .ngx-constellation (encapsulation: None,
+   because the graph's SVG nodes are created by the engine at runtime). */
+
+.ngx-constellation {
+  --nc-font: Vazirmatn, IRANSans, Tahoma, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --nc-radius: 14px;
+  display: block;
+  position: relative;
+  height: 100%;
+  min-height: 420px;
+  overflow: hidden;
+  font-family: var(--nc-font);
+  line-height: 1.7;
+  color: var(--nc-ink);
+  background: var(--nc-bg);
+  -webkit-font-smoothing: antialiased;
+  isolation: isolate;
+}
+.ngx-constellation,
+.ngx-constellation[data-theme='light'] {
+  --nc-bg: #f6f3ec;
+  --nc-surface: #fffdf9;
+  --nc-surface-2: #f0ebdf;
+  --nc-ink: #1c2333;
+  --nc-muted: #5b6579;
+  --nc-line: #e3dccb;
+  --nc-accent: #0a6b4f;
+  --nc-accent-ink: #fffdf9;
+  --nc-accent-soft: #e0f3ec;
+  --nc-stage-bg: radial-gradient(circle at 60% 40%, #fffdf8 0%, #f6f3ec 70%);
+  --nc-edge: rgba(28, 35, 51, 0.17);
+  --nc-halo: #faf7f0;
+  --nc-node-stroke: #fffdf9;
+  --nc-label: #1c2333;
+  --nc-focus-a: #5ee0b0;
+  --nc-focus-b: #0a8f6a;
+  --nc-focus-ring: #0a8f6a;
+  --nc-orbit: rgba(28, 35, 51, 0.14);
+  --nc-shadow: 0 1px 2px rgba(28, 35, 51, 0.06), 0 10px 30px rgba(28, 35, 51, 0.08);
+  color-scheme: light;
+}
+.ngx-constellation[data-theme='dark'] {
+  --nc-bg: #0e1525;
+  --nc-surface: #141d31;
+  --nc-surface-2: #1a2540;
+  --nc-ink: #e9edf6;
+  --nc-muted: #9ba7bf;
+  --nc-line: #25314e;
+  --nc-accent: #5fd3a6;
+  --nc-accent-ink: #0b1220;
+  --nc-accent-soft: #12372b;
+  --nc-stage-bg: radial-gradient(circle at 60% 40%, #131c33 0%, #0b1220 75%);
+  --nc-edge: rgba(200, 215, 240, 0.15);
+  --nc-halo: #0d1527;
+  --nc-node-stroke: #0b1220;
+  --nc-label: #e9edf6;
+  --nc-focus-a: #8ff0c9;
+  --nc-focus-b: #14a37a;
+  --nc-focus-ring: #5fd3a6;
+  --nc-orbit: rgba(200, 215, 240, 0.14);
+  --nc-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+.ngx-constellation[data-theme='sky'] {
+  --nc-bg: #060b1a;
+  --nc-surface: #0d1430;
+  --nc-surface-2: #141d42;
+  --nc-ink: #f3ecd8;
+  --nc-muted: #a9b1c9;
+  --nc-line: rgba(255, 255, 255, 0.1);
+  --nc-accent: #f2c66d;
+  --nc-accent-ink: #0d1430;
+  --nc-accent-soft: rgba(242, 198, 109, 0.14);
+  --nc-stage-bg: radial-gradient(ellipse at 72% 18%, #1d2756 0%, #0b1230 42%, #040713 100%);
+  --nc-edge: rgba(242, 210, 140, 0.22);
+  --nc-halo: #070c20;
+  --nc-node-stroke: rgba(255, 255, 255, 0.9);
+  --nc-label: #f3ecd8;
+  --nc-focus-a: #fffbe6;
+  --nc-focus-b: #e8a93a;
+  --nc-focus-ring: #f2c66d;
+  --nc-orbit: rgba(242, 210, 140, 0.16);
+  --nc-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 36px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+.ngx-constellation *,
+.ngx-constellation *::before,
+.ngx-constellation *::after {
+  box-sizing: border-box;
+}
+.ngx-constellation [hidden] {
+  display: none !important;
+}
+.ngx-constellation button {
+  font: inherit;
+  color: inherit;
+}
+.ngx-constellation :focus-visible {
+  outline: 2px solid var(--nc-accent);
+  outline-offset: 2px;
+}
+.ngx-constellation kbd {
+  font: inherit;
+  font-size: 11px;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 5px;
+  border: 1px solid var(--nc-line);
+  background: var(--nc-surface);
+  color: var(--nc-muted);
+}
+.nc-root {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  height: 100%;
+}
+
+/* ---------- toolbar ---------- */
+.nc-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  background: var(--nc-surface);
+  border-bottom: 1px solid var(--nc-line);
+  position: relative;
+  z-index: 20;
+}
+.nc-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.nc-star {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: var(--nc-accent);
+  color: var(--nc-accent-ink);
+  font-size: 16px;
+}
+.nc-search {
+  position: relative;
+  flex: 1;
+  max-width: 360px;
+  min-width: 140px;
+}
+.nc-search input {
+  width: 100%;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--nc-line);
+  background: var(--nc-surface-2);
+  color: var(--nc-ink);
+  padding-block: 0;
+  padding-inline: 36px 34px;
+  font: inherit;
+  font-size: 14px;
+}
+.nc-search input:focus {
+  outline: none;
+  border-color: var(--nc-accent);
+  background: var(--nc-surface);
+}
+.nc-search .nc-mag {
+  position: absolute;
+  inset-inline-start: 11px;
+  top: 10px;
+  width: 18px;
+  height: 18px;
+  color: var(--nc-muted);
+  pointer-events: none;
+}
+.nc-search kbd {
+  position: absolute;
+  inset-inline-end: 10px;
+  top: 10px;
+}
+.nc-qres {
+  position: absolute;
+  top: 44px;
+  inset-inline: 0;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  border-radius: 12px;
+  box-shadow: var(--nc-shadow);
+  max-height: 340px;
+  overflow: auto;
+  z-index: 30;
+}
+.nc-qres li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.nc-qres li[aria-selected='true'],
+.nc-qres li:hover {
+  background: var(--nc-surface-2);
+}
+.nc-qres li i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--c);
+  flex: none;
+}
+.nc-qres li small {
+  color: var(--nc-muted);
+  margin-inline-start: auto;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.nc-qres .nc-empty {
+  color: var(--nc-muted);
+  cursor: default;
+}
+.nc-spacer {
+  flex: 1;
+}
+.nc-seg {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 11px;
+  background: var(--nc-surface-2);
+  border: 1px solid var(--nc-line);
+}
+.nc-seg button {
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  height: 32px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--nc-muted);
+  white-space: nowrap;
+}
+.nc-seg button:hover {
+  color: var(--nc-ink);
+}
+.nc-seg button[aria-pressed='true'] {
+  background: var(--nc-surface);
+  color: var(--nc-ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+.nc-seg b {
+  font-weight: 400;
+}
+.nc-ico {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+.nc-ico .nc-f {
+  fill: currentColor;
+  stroke: none;
+}
+.nc-icbtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--nc-line);
+  background: var(--nc-surface);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  flex: none;
+}
+.nc-icbtn:hover {
+  background: var(--nc-surface-2);
+}
+
+/* ---------- layout ---------- */
+.nc-app {
+  display: grid;
+  grid-template-columns: 370px minmax(0, 1fr);
+  min-height: 0;
+  position: relative;
+}
+.nc-app.nc-no-panel {
+  grid-template-columns: minmax(0, 1fr);
+}
+.nc-panel {
+  background: var(--nc-surface);
+  border-inline-end: 1px solid var(--nc-line);
+  overflow: auto;
+  min-height: 0;
+  position: relative;
+  z-index: 10;
+}
+.nc-sheet-handle {
+  display: none;
+}
+.nc-pbody {
+  padding: 20px 20px 32px;
+}
+.nc-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--nc-stage-bg);
+  min-height: 0;
+}
+.nc-stars {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  pointer-events: none;
+}
+.ngx-constellation[data-theme='sky'] .nc-stars {
+  display: block;
+}
+.nc-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.nc-svg:focus {
+  outline: none;
+}
+.nc-svg.nc-panning {
+  cursor: grabbing;
+}
+
+/* ---------- graph ---------- */
+.nc-node {
+  cursor: pointer;
+  transition: opacity 0.35s;
+}
+.nc-node:focus {
+  outline: none;
+}
+.nc-node .nc-inner {
+  animation: nc-pop 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+.nc-node.nc-out {
+  pointer-events: none;
+}
+.nc-node.nc-out .nc-inner {
+  animation: nc-popout 0.3s ease-in forwards;
+}
+@keyframes nc-pop {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+@keyframes nc-popout {
+  to {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+.nc-node .nc-body {
+  fill: var(--c);
+  stroke: var(--nc-node-stroke);
+  stroke-width: 2.5;
+  transition:
+    stroke 0.2s,
+    stroke-width 0.2s;
+}
+.nc-node:hover .nc-body,
+.nc-node:focus-visible .nc-body {
+  stroke: var(--nc-ink);
+  stroke-width: 3;
+}
+.nc-node .nc-ring {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 2;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.nc-node.nc-sel .nc-ring {
+  opacity: 1;
+  animation: nc-pulse 2s ease-out infinite;
+}
+.nc-node.nc-sel .nc-body {
+  stroke: var(--nc-ink);
+  stroke-width: 3;
+}
+.nc-node.nc-focus .nc-body {
+  fill: var(--nc-focus-fill);
+  stroke-width: 4;
+}
+.nc-node.nc-focus .nc-ring,
+.nc-node.nc-focus.nc-sel .nc-ring {
+  opacity: 0.9;
+  stroke: var(--nc-focus-ring);
+  stroke-dasharray: 3 7;
+  stroke-width: 2.2;
+  animation: nc-spin 24s linear infinite;
+}
+@keyframes nc-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+@keyframes nc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.nc-node .nc-lbl {
+  font-size: calc(12px * var(--nc-ls, 1));
+  fill: var(--nc-label);
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--nc-halo);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.ngx-constellation[dir='rtl'] .nc-bg text {
+  direction: rtl;
+}
+/* let user content pick its own direction (e.g. Persian titles inside an English UI) */
+.nc-pbody h2,
+.nc-tpill,
+.nc-tag,
+.nc-relbox p,
+.nc-sn,
+.nc-chip b,
+.nc-chip small,
+.nc-pnode,
+.nc-plink,
+.nc-dist span,
+.nc-ngh,
+.nc-lg,
+.nc-qres li,
+.nc-trail b,
+.nc-trail button,
+.nc-pair,
+.nc-tcap p,
+.nc-pickbar b,
+.nc-sheet-handle {
+  unicode-bidi: plaintext;
+}
+.nc-node.nc-focus .nc-lbl {
+  font-size: calc(15px * var(--nc-ls, 1));
+  font-weight: 700;
+}
+.nc-node.nc-sel .nc-lbl,
+.nc-node:hover .nc-lbl {
+  font-weight: 700;
+}
+.nc-node .nc-more {
+  display: none;
+}
+.nc-node.nc-has-more .nc-more {
+  display: block;
+}
+.nc-node .nc-more circle {
+  fill: var(--nc-surface);
+  stroke: var(--c);
+  stroke-width: 1.6;
+}
+.nc-node .nc-more text {
+  font-size: 9px;
+  font-weight: 700;
+  fill: var(--nc-ink);
+  text-anchor: middle;
+  direction: ltr;
+}
+.nc-node .nc-pin {
+  display: none;
+  fill: var(--nc-ink);
+}
+.nc-svg[data-layout='force'] .nc-node.nc-pinned:not(.nc-focus) .nc-pin {
+  display: block;
+}
+.nc-node.nc-dim {
+  opacity: 0.14;
+}
+.nc-edge {
+  fill: none;
+  stroke: var(--nc-edge);
+  stroke-linecap: round;
+  transition:
+    opacity 0.35s,
+    stroke 0.3s;
+}
+.nc-edge.nc-hi {
+  stroke: var(--c);
+  stroke-opacity: 0.9;
+  stroke-dasharray: 6 7;
+  animation: nc-flow 1.1s linear infinite;
+}
+.nc-edge.nc-hi.nc-rev {
+  animation-direction: reverse;
+}
+.nc-edge.nc-dim {
+  opacity: 0.1;
+}
+@keyframes nc-flow {
+  to {
+    stroke-dashoffset: -26;
+  }
+}
+.nc-elab {
+  pointer-events: none;
+  animation: nc-fade 0.3s both;
+}
+.nc-elab rect {
+  fill: var(--nc-surface);
+  stroke: var(--nc-line);
+}
+.nc-elab text {
+  font-size: 11px;
+  fill: var(--nc-ink);
+  opacity: 0.85;
+  text-anchor: middle;
+}
+.nc-svg[data-labels='smart'].nc-lo
+  .nc-node:not(.nc-focus):not(.nc-hi):not(.nc-sel):not(:hover)
+  .nc-lbl {
+  opacity: 0;
+}
+.nc-svg[data-labels='none'] .nc-node:not(.nc-focus):not(.nc-sel):not(:hover) .nc-lbl {
+  opacity: 0;
+}
+.nc-bg > * {
+  animation: nc-fade 0.7s both;
+}
+@keyframes nc-fade {
+  from {
+    opacity: 0;
+  }
+}
+.nc-orbit {
+  fill: none;
+  stroke: var(--nc-orbit);
+  stroke-width: 1.3;
+  stroke-dasharray: 2 7;
+}
+.nc-bglbl {
+  font-size: calc(11px * var(--nc-ls, 1));
+  fill: var(--nc-muted);
+  text-anchor: middle;
+  opacity: 0.8;
+}
+.nc-blob circle {
+  fill: var(--c);
+  fill-opacity: 0.07;
+  stroke: var(--c);
+  stroke-opacity: 0.35;
+  stroke-dasharray: 4 7;
+  stroke-width: 1.4;
+}
+.nc-blob text {
+  fill: var(--c);
+  font-weight: 700;
+  font-size: calc(15px * var(--nc-ls, 1));
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--nc-halo);
+  stroke-width: 4px;
+}
+.nc-lane rect {
+  fill: var(--c);
+  fill-opacity: 0.05;
+  stroke: var(--c);
+  stroke-opacity: 0.14;
+}
+.nc-lane text {
+  fill: var(--c);
+  font-weight: 700;
+  font-size: calc(13px * var(--nc-ls, 1));
+}
+.nc-axis {
+  stroke: var(--nc-muted);
+  stroke-opacity: 0.45;
+  stroke-width: 1.3;
+}
+.nc-tick {
+  stroke: var(--nc-muted);
+  stroke-opacity: 0.18;
+  stroke-dasharray: 3 6;
+}
+.nc-eralbl {
+  font-size: calc(12px * var(--nc-ls, 1));
+  fill: var(--nc-muted);
+  text-anchor: middle;
+  font-weight: 500;
+}
+.nc-eradot {
+  fill: var(--nc-muted);
+}
+.ngx-constellation[data-theme='sky'] .nc-node .nc-body {
+  filter: var(--nc-glow);
+}
+.ngx-constellation[data-theme='sky'] .nc-node.nc-focus .nc-body {
+  filter: var(--nc-glow2);
+}
+.ngx-constellation[data-theme='sky'] .nc-edge {
+  stroke-width: 1px !important;
+}
+.ngx-constellation[data-theme='sky'] .nc-edge.nc-hi {
+  stroke-width: 2px !important;
+}
+
+/* ---------- overlays ---------- */
+.nc-glass {
+  background: color-mix(in srgb, var(--nc-surface) 86%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--nc-line);
+  border-radius: var(--nc-radius);
+  box-shadow: var(--nc-shadow);
+}
+.nc-trail {
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+  max-width: calc(100% - 330px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-block: 5px;
+  padding-inline: 8px 12px;
+  font-size: 13px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  z-index: 5;
+}
+.nc-trail::-webkit-scrollbar {
+  display: none;
+}
+.nc-trail .nc-tl {
+  color: var(--nc-muted);
+  white-space: nowrap;
+}
+.nc-trail button:not(.nc-ic) {
+  border: 0;
+  background: transparent;
+  color: var(--nc-accent);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.nc-trail button:not(.nc-ic):hover {
+  background: var(--nc-accent-soft);
+}
+.nc-trail b {
+  white-space: nowrap;
+}
+.nc-trail .nc-sep {
+  color: var(--nc-muted);
+}
+.nc-trail .nc-ic {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--nc-line);
+  background: var(--nc-surface);
+  cursor: pointer;
+  flex: none;
+}
+.nc-trail .nc-ic:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.nc-filters {
+  position: absolute;
+  top: 12px;
+  inset-inline-end: 12px;
+  width: 290px;
+  z-index: 5;
+  font-size: 13px;
+}
+.nc-filters summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+.nc-filters summary::-webkit-details-marker {
+  display: none;
+}
+.nc-filters .nc-stat {
+  margin-inline-start: auto;
+  font-weight: 400;
+  color: var(--nc-muted);
+  font-size: 12px;
+}
+.nc-filters .nc-chev {
+  transition: transform 0.2s;
+  color: var(--nc-muted);
+}
+.nc-filters[open] .nc-chev {
+  transform: rotate(180deg);
+}
+.nc-fbody {
+  padding: 0 14px 14px;
+  display: grid;
+  gap: 12px;
+}
+.nc-fbody h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--nc-muted);
+  font-weight: 500;
+}
+.nc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.nc-lg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--nc-line);
+  background: var(--nc-surface);
+  border-radius: 999px;
+  padding-block: 3px;
+  padding-inline: 8px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.nc-lg i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--c);
+}
+.nc-lg small {
+  color: var(--nc-muted);
+}
+.nc-lg[aria-pressed='false'] {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+.nc-lg[aria-pressed='false'] i {
+  background: transparent;
+  border: 2px solid var(--c);
+}
+.nc-fbody .nc-seg button {
+  height: 28px;
+  font-size: 12px;
+  flex: 1;
+}
+.nc-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nc-range input {
+  flex: 1;
+  accent-color: var(--nc-accent);
+}
+.nc-range output {
+  min-width: 22px;
+  text-align: center;
+  font-weight: 700;
+}
+.nc-linkbtn {
+  border: 0;
+  background: transparent;
+  color: var(--nc-accent);
+  cursor: pointer;
+  padding: 0;
+  font-size: 12px;
+  text-align: start;
+}
+.nc-foot {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--nc-muted);
+  line-height: 1.6;
+}
+.nc-zoomctl {
+  position: absolute;
+  bottom: 14px;
+  inset-inline-end: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  z-index: 5;
+}
+.nc-mini {
+  width: 184px;
+  height: 124px;
+  padding: 0;
+  overflow: hidden;
+  cursor: crosshair;
+}
+.nc-mini canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+.nc-zbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+}
+.nc-zbar button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  background: transparent;
+  border-radius: 9px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  color: var(--nc-ink);
+}
+.nc-zbar button:hover {
+  background: var(--nc-surface-2);
+}
+.nc-zbar button[aria-pressed='true'] {
+  color: var(--nc-accent);
+}
+.nc-zv {
+  min-width: 46px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--nc-muted);
+}
+.nc-tourbar {
+  position: absolute;
+  bottom: 14px;
+  inset-inline-start: 12px;
+  z-index: 5;
+  max-width: min(440px, calc(100% - 230px));
+}
+.nc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--nc-line);
+  background: var(--nc-surface);
+  color: var(--nc-ink);
+  cursor: pointer;
+  font-size: 13.5px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nc-btn:hover {
+  background: var(--nc-surface-2);
+}
+.nc-btn.nc-pri {
+  background: var(--nc-accent);
+  border-color: var(--nc-accent);
+  color: var(--nc-accent-ink);
+  font-weight: 700;
+}
+.nc-btn.nc-pri:hover {
+  filter: brightness(1.08);
+}
+.nc-btn.nc-ghost {
+  border-style: dashed;
+}
+.nc-tourcard {
+  padding: 12px 14px;
+  width: 440px;
+  max-width: 100%;
+}
+.nc-tprog {
+  height: 3px;
+  border-radius: 3px;
+  background: var(--nc-surface-2);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.nc-tprog i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--nc-accent);
+}
+.nc-trow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nc-tcount {
+  font-size: 12px;
+  color: var(--nc-muted);
+}
+.nc-tctl {
+  margin-inline-start: auto;
+  display: flex;
+  gap: 4px;
+}
+.nc-tctl button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--nc-line);
+  background: var(--nc-surface);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.nc-tctl button:hover {
+  background: var(--nc-surface-2);
+}
+.nc-tcap {
+  margin-top: 6px;
+  font-size: 14px;
+}
+.nc-pair {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-weight: 700;
+}
+.nc-pair span {
+  color: var(--nc-muted);
+  font-weight: 400;
+}
+.nc-tcap p {
+  margin: 2px 0 0;
+  color: var(--nc-muted);
+  font-size: 13px;
+}
+.nc-pickbar {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  font-size: 13px;
+  z-index: 6;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border-color: var(--nc-accent);
+  white-space: nowrap;
+}
+.nc-pickbar b {
+  color: var(--nc-accent);
+}
+.nc-toast {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translate(-50%, 20px);
+  opacity: 0;
+  pointer-events: none;
+  background: var(--nc-ink);
+  color: var(--nc-surface);
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  transition: 0.3s;
+  z-index: 50;
+  max-width: calc(100% - 32px);
+  width: max-content;
+  text-align: center;
+}
+.nc-toast.nc-show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ---------- panel ---------- */
+.nc-phead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.nc-tpill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+.nc-tpill::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c);
+}
+.nc-tag {
+  font-size: 11.5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--nc-line);
+  color: var(--nc-muted);
+}
+.nc-panel h2 {
+  margin: 10px 0 8px;
+  font-size: 22px;
+  line-height: 1.5;
+}
+.nc-thumb {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--nc-line);
+  margin: 4px 0 10px;
+  background: var(--nc-surface-2);
+}
+.nc-relbox {
+  background: var(--nc-surface-2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 10px 0;
+}
+.nc-rl {
+  font-size: 12px;
+  color: var(--nc-muted);
+}
+.nc-relbox p {
+  margin: 2px 0 6px;
+  font-weight: 500;
+}
+.nc-strength {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--nc-muted);
+}
+.nc-strength i {
+  flex: 1;
+  height: 5px;
+  border-radius: 5px;
+  background: var(--nc-line);
+  overflow: hidden;
+}
+.nc-strength b {
+  display: block;
+  height: 100%;
+  background: var(--nc-accent);
+  border-radius: 5px;
+}
+.nc-sn {
+  color: var(--nc-muted);
+  font-size: 14.5px;
+  margin: 10px 0 14px;
+}
+.nc-detail {
+  margin: 0 0 14px;
+}
+.nc-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.nc-nbs h3,
+.nc-pathsec h3,
+.nc-intro h3 {
+  font-size: 14px;
+  margin: 14px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nc-nbs h3 small {
+  color: var(--nc-muted);
+  font-weight: 400;
+}
+.nc-pathsec h3 .nc-linkbtn {
+  margin-inline-start: auto;
+}
+.nc-ng {
+  margin-bottom: 12px;
+}
+.nc-ngh {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--nc-muted);
+  margin-bottom: 6px;
+}
+.nc-ngh i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c);
+}
+.nc-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  text-align: start;
+  border: 1px solid var(--nc-line);
+  border-inline-start: 3px solid var(--c);
+  background: var(--nc-surface);
+  border-radius: 10px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  position: relative;
+}
+.nc-chip:hover {
+  background: var(--nc-surface-2);
+}
+.nc-chip b {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.nc-chip small {
+  font-size: 12px;
+  color: var(--nc-muted);
+  line-height: 1.5;
+}
+.nc-chip.nc-off {
+  border-style: dashed;
+  border-inline-start-style: solid;
+  opacity: 0.75;
+}
+.nc-plus {
+  position: absolute;
+  inset-inline-end: 10px;
+  top: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--nc-accent-soft);
+  color: var(--nc-accent);
+  font-size: 13px;
+}
+.nc-path {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+}
+.nc-path li {
+  position: relative;
+  padding-inline-start: 18px;
+  padding-bottom: 4px;
+}
+.nc-path li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 4px;
+  top: 10px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--c, var(--nc-accent));
+}
+.nc-path li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 8px;
+  top: 20px;
+  bottom: -6px;
+  width: 1.5px;
+  background: var(--nc-line);
+}
+.nc-pnode {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13.5px;
+  text-align: start;
+}
+.nc-pnode:hover {
+  color: var(--nc-accent);
+}
+.nc-plink {
+  display: block;
+  font-size: 12px;
+  color: var(--nc-muted);
+  margin: 1px 0 4px;
+}
+.nc-intro {
+  background: var(--nc-accent-soft);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 10px 0 14px;
+  font-size: 13.5px;
+}
+.nc-intro h3 {
+  margin: 0 0 6px;
+}
+.nc-intro ul {
+  margin: 0;
+  padding-inline-start: 18px;
+}
+.nc-intro li {
+  margin: 2px 0;
+}
+.nc-dist {
+  display: grid;
+  gap: 5px;
+  margin: 8px 0 4px;
+}
+.nc-dist div {
+  display: grid;
+  grid-template-columns: 120px 1fr 26px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.nc-dist i {
+  height: 6px;
+  border-radius: 6px;
+  background: var(--nc-line);
+  overflow: hidden;
+}
+.nc-dist b {
+  display: block;
+  height: 100%;
+  background: var(--c);
+  border-radius: 6px;
+}
+
+.nc-dialog {
+  border: 1px solid var(--nc-line);
+  border-radius: 16px;
+  background: var(--nc-surface);
+  color: var(--nc-ink);
+  padding: 22px 24px;
+  max-width: 540px;
+  width: calc(100% - 32px);
+  box-shadow: var(--nc-shadow);
+  font-family: var(--nc-font);
+}
+.nc-dialog::backdrop {
+  background: rgba(5, 10, 25, 0.45);
+}
+.nc-dialog h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+.nc-dialog table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.nc-dialog td {
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--nc-line);
+}
+.nc-dialog td:first-child {
+  white-space: nowrap;
+  color: var(--nc-muted);
+  width: 40%;
+}
+.nc-dialog .nc-close {
+  float: inline-end;
+}
+
+/* ---------- compact (container narrower than 900px) ---------- */
+.nc-narrow .nc-seg.nc-layouts button span,
+.nc-narrow .nc-seg.nc-themes button span {
+  display: none;
+}
+.nc-compact .nc-top {
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px;
+}
+.nc-compact .nc-spacer {
+  display: none;
+}
+.nc-compact .nc-top .nc-seg button {
+  padding: 0 8px;
+}
+.nc-compact .nc-icbtn {
+  width: 34px;
+  height: 34px;
+}
+.nc-compact .nc-seg.nc-layouts {
+  flex: 1;
+  min-width: 0;
+  justify-content: space-between;
+}
+.nc-compact .nc-search {
+  order: 5;
+  flex-basis: 100%;
+  max-width: none;
+}
+.nc-compact .nc-search kbd {
+  display: none;
+}
+.nc-compact .nc-app {
+  grid-template-columns: minmax(0, 1fr);
+}
+.nc-compact .nc-panel {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  max-height: 62%;
+  border: 1px solid var(--nc-line);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.18);
+  transform: translateY(calc(100% - 64px));
+  transition: transform 0.35s cubic-bezier(0.3, 0.9, 0.3, 1);
+  z-index: 30;
+}
+.nc-compact .nc-panel.nc-open {
+  transform: none;
+}
+.nc-compact .nc-sheet-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 64px;
+  border: 0;
+  background: var(--nc-surface);
+  cursor: pointer;
+  z-index: 2;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 0 16px;
+}
+.nc-compact .nc-sheet-handle::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 40px;
+  height: 4px;
+  margin-left: -20px;
+  border-radius: 4px;
+  background: var(--nc-line);
+}
+.nc-compact .nc-pbody {
+  padding-top: 0;
+}
+.nc-compact .nc-trail {
+  max-width: calc(100% - 24px);
+}
+.nc-compact .nc-filters {
+  top: 60px;
+  width: auto;
+  inset-inline-start: 12px;
+}
+.nc-compact .nc-filters:not([open]) {
+  inset-inline-start: auto;
+}
+.nc-compact .nc-zoomctl {
+  bottom: 76px;
+}
+.nc-compact .nc-mini,
+.nc-compact .nc-opt {
+  display: none;
+}
+.nc-compact .nc-tourbar {
+  bottom: 76px;
+  max-width: calc(100% - 200px);
+}
+.nc-compact .nc-tourcard {
+  width: auto;
+}
+.nc-compact .nc-toast {
+  bottom: 84px;
+}
+.nc-compact .nc-app.nc-no-panel .nc-zoomctl,
+.nc-compact .nc-app.nc-no-panel .nc-tourbar {
+  bottom: 14px;
+}
+.nc-tiny .nc-brand {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ngx-constellation *,
+  .ngx-constellation *::before,
+  .ngx-constellation *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

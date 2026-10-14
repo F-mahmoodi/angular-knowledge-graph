@@ -1,0 +1,645 @@
+<div class="nc-root">
+  @if (f().toolbar) {
+    <header class="nc-top">
+      @if (brand()) {
+        <div class="nc-brand">
+          <span class="nc-star" aria-hidden="true">✦</span><span>{{ brand() }}</span>
+        </div>
+      }
+      @if (f().search) {
+        <div class="nc-search" role="search">
+          <svg class="nc-ico nc-mag" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+          <input
+            #search
+            type="search"
+            autocomplete="off"
+            role="combobox"
+            [placeholder]="S().searchPlaceholder"
+            [attr.aria-label]="S().searchAria"
+            [attr.aria-expanded]="qOpen() && !!query()"
+            [attr.aria-controls]="'nc-qres-' + uid"
+            [attr.aria-activedescendant]="results().length ? 'nc-qo-' + uid + '-' + qIdx() : null"
+            [value]="query()"
+            (input)="onQuery($any($event.target).value)"
+            (keydown)="onSearchKey($event)"
+            (focus)="qOpen.set(true)"
+            (blur)="onSearchBlur()"
+          />
+          <kbd>/</kbd>
+          @if (qOpen() && query()) {
+            <ul class="nc-qres" role="listbox" [id]="'nc-qres-' + uid">
+              @for (r of results(); track r.id; let i = $index) {
+                <li
+                  role="option"
+                  [id]="'nc-qo-' + uid + '-' + i"
+                  [attr.aria-selected]="i === qIdx()"
+                  [style.--c]="r.color"
+                  (pointerdown)="$event.preventDefault(); choose(r.id)"
+                >
+                  <i></i>{{ r.title }}<small>{{ r.status }}</small>
+                </li>
+              } @empty {
+                <li class="nc-empty">{{ S().noResults }}</li>
+              }
+            </ul>
+          }
+        </div>
+      }
+      <div class="nc-spacer"></div>
+      @if (f().layoutSwitcher) {
+        <div class="nc-seg nc-layouts" role="group" [attr.aria-label]="S().layoutsAria">
+          @for (l of f().layouts; track l; let i = $index) {
+            <button
+              type="button"
+              [attr.aria-pressed]="layout() === l"
+              [title]="S().layouts[l].label + ' (' + (i + 1) + ') — ' + S().layouts[l].description"
+              (click)="chooseLayout(l)"
+            >
+              <svg class="nc-ico" viewBox="0 0 24 24" aria-hidden="true">
+                @switch (l) {
+                  @case ('force') {
+                    <circle class="nc-f" cx="6" cy="7" r="2.4" />
+                    <circle class="nc-f" cx="17.5" cy="5.5" r="2" />
+                    <circle class="nc-f" cx="12" cy="13" r="3" />
+                    <circle class="nc-f" cx="5" cy="19" r="2" />
+                    <circle class="nc-f" cx="19" cy="18.5" r="2.3" />
+                    <path d="M7.7 8.6 10 11M16.3 7.2l-2.6 3.6M10 15.2l-3.5 2.4M14.4 14.8l2.8 2.2" />
+                  }
+                  @case ('orbit') {
+                    <circle class="nc-f" cx="12" cy="12" r="2.6" />
+                    <circle cx="12" cy="12" r="6" />
+                    <circle cx="12" cy="12" r="10" />
+                    <circle class="nc-f" cx="18" cy="12" r="1.7" />
+                    <circle class="nc-f" cx="5" cy="6.5" r="1.7" />
+                  }
+                  @case ('cluster') {
+                    <circle cx="7" cy="7.5" r="4.5" />
+                    <circle cx="17" cy="7.5" r="4.5" />
+                    <circle cx="12" cy="17" r="4.5" />
+                    <circle class="nc-f" cx="6" cy="7" r="1.2" />
+                    <circle class="nc-f" cx="8.3" cy="8.6" r="1.2" />
+                    <circle class="nc-f" cx="17" cy="7" r="1.2" />
+                    <circle class="nc-f" cx="11" cy="17.5" r="1.2" />
+                    <circle class="nc-f" cx="13.4" cy="16" r="1.2" />
+                  }
+                  @case ('timeline') {
+                    <path d="M3 5h18" />
+                    <path d="M6 3.5v3M12 3.5v3M18 3.5v3" />
+                    <circle class="nc-f" cx="17" cy="11" r="1.8" />
+                    <circle class="nc-f" cx="9" cy="11" r="1.8" />
+                    <circle class="nc-f" cx="13" cy="16" r="1.8" />
+                    <circle class="nc-f" cx="5" cy="20" r="1.8" />
+                    <circle class="nc-f" cx="19" cy="20" r="1.8" />
+                  }
+                  @case ('arc') {
+                    <path d="M2 18h20" />
+                    <path d="M4 18a5 5 0 0 1 10 0M9 18a6 6 0 0 1 11 0M14 18a2.5 2.5 0 0 1 5 0" />
+                  }
+                }
+              </svg>
+              <span>{{ S().layouts[l].label }}</span>
+            </button>
+          }
+        </div>
+      }
+      @if (f().themeSwitcher) {
+        <div class="nc-seg nc-themes" role="group" [attr.aria-label]="S().themesAria">
+          @for (t of themes; track t) {
+            <button
+              type="button"
+              [attr.aria-pressed]="resolvedTheme() === t"
+              [title]="S().themes[t]"
+              (click)="theme.set(t)"
+            >
+              <b aria-hidden="true">{{ t === 'light' ? '☀' : t === 'dark' ? '◐' : '✦' }}</b
+              ><span>{{ S().themes[t] }}</span>
+            </button>
+          }
+        </div>
+      }
+      @if (f().help) {
+        <button
+          type="button"
+          class="nc-icbtn"
+          [title]="S().help + ' (?)'"
+          [attr.aria-label]="S().help"
+          (click)="openHelp()"
+        >
+          {{ S().helpGlyph }}
+        </button>
+      }
+    </header>
+  }
+
+  <div class="nc-app" [class.nc-no-panel]="!f().panel">
+    @if (f().panel) {
+      <aside class="nc-panel" [class.nc-open]="sheetOpen()">
+        <button
+          type="button"
+          class="nc-sheet-handle"
+          [attr.aria-expanded]="sheetOpen()"
+          (click)="sheetOpen.set(!sheetOpen())"
+        >
+          {{ sheetTitle() }}
+        </button>
+        @if (panel(); as p) {
+          <div class="nc-pbody" aria-live="polite">
+            <div class="nc-phead">
+              <span class="nc-tpill" [style.--c]="p.color">{{ p.typeLabel }}</span>
+              @if (p.isFocus) {
+                <span class="nc-tag">{{ S().centerTag }}</span>
+              }
+              @for (t of p.tags; track $index) {
+                <span class="nc-tag">{{ t }}</span>
+              }
+            </div>
+            <h2>{{ p.title }}</h2>
+            @if (p.image) {
+              <img
+                class="nc-thumb"
+                [src]="p.image"
+                alt=""
+                loading="lazy"
+                (error)="$any($event.target).remove()"
+              />
+            }
+            @if (p.intro; as it) {
+              <div class="nc-intro">
+                <h3>{{ S().introTitle }}</h3>
+                <ul>
+                  @for (tip of it.tips; track $index) {
+                    <li>{{ tip }}</li>
+                  }
+                </ul>
+              </div>
+              <div class="nc-dist">
+                @for (d of it.dist; track d.label) {
+                  <div [style.--c]="d.color">
+                    <span>{{ d.label }}</span
+                    ><i><b [style.width.%]="d.pct"></b></i><span>{{ d.count }}</span>
+                  </div>
+                }
+              </div>
+            }
+            @if (p.relation; as r) {
+              <div class="nc-relbox">
+                <div class="nc-rl">{{ S().relationTo(p.focusTitle) }}</div>
+                @if (r.label) {
+                  <p>{{ r.label }}</p>
+                }
+                <div class="nc-strength">
+                  <i><b [style.width.%]="r.pct"></b></i><span>{{ S().strength(r.weight) }}</span>
+                </div>
+              </div>
+            }
+            @if (p.indirect; as steps) {
+              <div class="nc-relbox">
+                <div class="nc-rl">{{ S().indirect(steps.length - 1) }}</div>
+                <ng-container
+                  [ngTemplateOutlet]="pathTpl"
+                  [ngTemplateOutletContext]="{ $implicit: steps }"
+                />
+              </div>
+            }
+            @if (p.path; as steps) {
+              <section class="nc-pathsec">
+                <h3>
+                  {{ S().pathTitle(steps.length - 1) }}
+                  <button type="button" class="nc-linkbtn" (click)="engine?.clearPath()">
+                    {{ S().clearPath }}
+                  </button>
+                </h3>
+                <ng-container
+                  [ngTemplateOutlet]="pathTpl"
+                  [ngTemplateOutletContext]="{ $implicit: steps }"
+                />
+              </section>
+            }
+            @if (p.snippet) {
+              <p class="nc-sn">{{ p.snippet }}</p>
+            }
+            @if (detailTemplate(); as tpl) {
+              <div class="nc-detail">
+                <ng-container
+                  [ngTemplateOutlet]="tpl"
+                  [ngTemplateOutletContext]="{
+                    $implicit: p.node,
+                    node: p.node,
+                    isFocus: p.isFocus,
+                  }"
+                />
+              </div>
+            }
+            <div class="nc-acts">
+              @if (!p.isFocus) {
+                <button type="button" class="nc-btn nc-pri" (click)="engine?.recenter(p.id)">
+                  {{ S().centerBtn }}
+                </button>
+              }
+              @if (p.hidden) {
+                <button type="button" class="nc-btn" (click)="engine?.toggleExpand(p.id)">
+                  {{ S().expandBtn(p.hidden) }}
+                </button>
+              } @else if (p.expanded && !p.isFocus) {
+                <button type="button" class="nc-btn" (click)="engine?.toggleExpand(p.id)">
+                  {{ S().collapseBtn }}
+                </button>
+              }
+              <button
+                type="button"
+                class="nc-btn"
+                [title]="S().pathToHint"
+                (click)="engine?.setPick(p.id)"
+              >
+                {{ S().pathTo }}
+              </button>
+              @if (p.pinned) {
+                <button type="button" class="nc-btn" (click)="engine?.unpin(p.id)">
+                  {{ S().unpin }}
+                </button>
+              }
+              @if (!f().openButton) {
+              } @else if (p.url) {
+                <a
+                  class="nc-btn nc-ghost"
+                  [href]="p.url"
+                  target="_blank"
+                  rel="noopener"
+                  (click)="nodeOpen.emit(p.node)"
+                  >{{ S().open }}</a
+                >
+              } @else {
+                <button type="button" class="nc-btn nc-ghost" (click)="nodeOpen.emit(p.node)">
+                  {{ S().open }}
+                </button>
+              }
+            </div>
+            <section class="nc-nbs">
+              <h3>
+                {{ S().links }} <small>{{ S().linksCount(p.linkCount) }}</small>
+              </h3>
+              @for (grp of p.groups; track grp.key) {
+                <div class="nc-ng">
+                  <div class="nc-ngh" [style.--c]="grp.color"><i></i>{{ grp.label }}</div>
+                  @for (it of grp.items; track it.id) {
+                    <button
+                      type="button"
+                      class="nc-chip"
+                      [class.nc-off]="!it.live"
+                      [style.--c]="grp.color"
+                      (click)="chipClick(it.id, it.live)"
+                      (pointerenter)="it.live && hoverChip(it.id)"
+                      (pointerleave)="hoverChip(null)"
+                    >
+                      <b>{{ it.title }}</b>
+                      @if (it.label) {
+                        <small>{{ it.label }}</small>
+                      }
+                      @if (!it.live) {
+                        <span class="nc-plus" [title]="S().addToGraph">＋</span>
+                      }
+                    </button>
+                  }
+                </div>
+              }
+            </section>
+          </div>
+        }
+      </aside>
+    }
+
+    <section class="nc-stage" #stage>
+      <canvas class="nc-stars" #stars aria-hidden="true"></canvas>
+      <svg
+        #svg
+        class="nc-svg"
+        role="application"
+        tabindex="0"
+        [attr.aria-label]="S().graphAria"
+        data-layout="force"
+        data-labels="smart"
+      >
+        <defs>
+          <radialGradient [attr.id]="'nc-fg-' + uid" cx="38%" cy="32%" r="75%">
+            <stop offset="0" style="stop-color: var(--nc-focus-a)" />
+            <stop offset="1" style="stop-color: var(--nc-focus-b)" />
+          </radialGradient>
+          <filter [attr.id]="'nc-glow-' + uid" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="5" result="b" />
+            <feMerge>
+              <feMergeNode in="b" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter [attr.id]="'nc-glow2-' + uid" x="-150%" y="-150%" width="400%" height="400%">
+            <feGaussianBlur stdDeviation="14" result="b" />
+            <feMerge>
+              <feMergeNode in="b" />
+              <feMergeNode in="b" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <g class="nc-vp">
+          <g class="nc-bg"></g>
+          <g class="nc-edges"></g>
+          <g class="nc-elabels"></g>
+          <g class="nc-nodes"></g>
+        </g>
+      </svg>
+
+      @if (snap(); as s) {
+        @if (f().trail) {
+          <nav class="nc-trail nc-glass" [attr.aria-label]="S().trail">
+            <button
+              type="button"
+              class="nc-ic"
+              [disabled]="s.trail.length < 2"
+              [title]="S().back"
+              [attr.aria-label]="S().back"
+              (click)="engine?.goBack()"
+            >
+              ↶
+            </button>
+            <span class="nc-tl">{{ S().trail }}</span>
+            @for (id of s.trail; track $index; let i = $index, last = $last) {
+              @if (last) {
+                <b>{{ short(title(id), 20) }}</b>
+              } @else {
+                <button type="button" (click)="engine?.trailTo(i)">
+                  {{ short(title(id), 16) }}
+                </button>
+                <span class="nc-sep" aria-hidden="true">{{
+                  direction() === 'rtl' ? '‹' : '›'
+                }}</span>
+              }
+            }
+          </nav>
+        }
+
+        @if (f().filters) {
+          <details class="nc-filters nc-glass" #filters (toggle)="onFiltersToggle()">
+            <summary>
+              <svg class="nc-ico" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 6h16M7 12h10M10 18h4" />
+              </svg>
+              {{ S().filters }}
+              <span class="nc-stat">{{ S().stats(s.nodeCount, s.edgeCount) }}</span>
+              <span class="nc-chev" aria-hidden="true">▾</span>
+            </summary>
+            <div class="nc-fbody">
+              <div>
+                <h4>{{ S().typesHint }}</h4>
+                <div class="nc-legend">
+                  @for (t of presentTypes(); track t.key) {
+                    <button
+                      type="button"
+                      class="nc-lg"
+                      [attr.aria-pressed]="!s.hiddenTypes.has(t.key)"
+                      [style.--c]="t.color"
+                      (click)="engine?.toggleType(t.key)"
+                    >
+                      <i></i>{{ t.label }}<small>{{ S().num(s.counts[t.key] || 0) }}</small>
+                    </button>
+                  }
+                </div>
+              </div>
+              <div>
+                <h4>{{ S().depth }}</h4>
+                <div class="nc-seg" role="group" [attr.aria-label]="S().depth">
+                  @for (d of [1, 2, 3]; track d) {
+                    <button type="button" [attr.aria-pressed]="s.depth === d" (click)="setDepth(d)">
+                      {{ S().depthSteps[d - 1] }}
+                    </button>
+                  }
+                </div>
+              </div>
+              <div>
+                <h4>{{ S().minStrength }}</h4>
+                <div class="nc-range">
+                  <input
+                    type="range"
+                    min="0"
+                    step="1"
+                    [max]="maxWeight()"
+                    [value]="s.minWeight"
+                    [attr.aria-label]="S().minStrength"
+                    (input)="onMinWeight($event, false)"
+                    (change)="onMinWeight($event, true)"
+                  />
+                  <output>{{ S().num(s.minWeight) }}</output>
+                </div>
+              </div>
+              <div>
+                <h4>{{ S().labels }}</h4>
+                <div class="nc-seg" role="group" [attr.aria-label]="S().labels">
+                  @for (m of labelModes; track m) {
+                    <button
+                      type="button"
+                      [attr.aria-pressed]="labels() === m"
+                      (click)="setLabels(m)"
+                    >
+                      {{ S().labelModes[m] }}
+                    </button>
+                  }
+                </div>
+              </div>
+              @if (s.pinned.size) {
+                <button type="button" class="nc-linkbtn" (click)="engine?.unpinAll()">
+                  {{ S().unpinAll }}
+                </button>
+              }
+              @if (note()) {
+                <p class="nc-foot">{{ note() }}</p>
+              }
+            </div>
+          </details>
+        }
+
+        @if (s.pick) {
+          <div class="nc-pickbar nc-glass">
+            ⤳ {{ S().pickPrefix }} <b>{{ title(s.pick) }}</b> {{ S().pickSuffix }} <kbd>Esc</kbd>
+          </div>
+        }
+
+        @if (f().tour) {
+          <div class="nc-tourbar">
+            @if (s.tour; as t) {
+              <div class="nc-tourcard nc-glass">
+                <div class="nc-tprog"><i #tprog></i></div>
+                <div class="nc-trow">
+                  <span class="nc-tcount">{{ S().tourCount(t.i + 1, t.n) }}</span>
+                  <div class="nc-tctl">
+                    <button
+                      type="button"
+                      [title]="S().prev"
+                      [attr.aria-label]="S().prev"
+                      (click)="engine?.tourGo(t.i - 1)"
+                    >
+                      {{ direction() === 'rtl' ? '→' : '←' }}
+                    </button>
+                    <button
+                      type="button"
+                      [title]="S().pauseResume"
+                      [attr.aria-label]="S().pauseResume"
+                      (click)="t.playing ? engine?.pauseTour() : engine?.playTour()"
+                    >
+                      {{ t.playing ? '❚❚' : '▶' }}
+                    </button>
+                    <button
+                      type="button"
+                      [title]="S().next"
+                      [attr.aria-label]="S().next"
+                      (click)="engine?.tourGo(t.i + 1)"
+                    >
+                      {{ direction() === 'rtl' ? '←' : '→' }}
+                    </button>
+                    <button
+                      type="button"
+                      [title]="S().stopTour"
+                      [attr.aria-label]="S().stopTour"
+                      (click)="engine?.stopTour()"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+                <div class="nc-tcap">
+                  <div class="nc-pair">{{ title(t.from) }} <span>⟷</span> {{ title(t.to) }}</div>
+                  @if (t.label) {
+                    <p>{{ t.label }}</p>
+                  }
+                </div>
+              </div>
+            } @else {
+              <button type="button" class="nc-btn nc-pri" (click)="engine?.startTour()">
+                <span aria-hidden="true">▶</span> {{ S().tourStart }}
+              </button>
+            }
+          </div>
+        }
+      }
+
+      @if (f().zoomControls || f().minimap) {
+        <div class="nc-zoomctl">
+          @if (f().minimap && miniOn()) {
+            <div class="nc-mini nc-glass">
+              <canvas
+                #mm
+                [title]="S().minimap"
+                (pointerdown)="mmPointer($event, 'down')"
+                (pointermove)="mmPointer($event, 'move')"
+                (pointerup)="mmPointer($event, 'up')"
+              ></canvas>
+            </div>
+          }
+          @if (f().zoomControls) {
+            <div class="nc-zbar nc-glass">
+              <button
+                type="button"
+                [title]="S().zoomIn"
+                [attr.aria-label]="S().zoomIn"
+                (click)="zoomIn()"
+              >
+                +
+              </button>
+              <span class="nc-zv">{{ S().percent(zoom()) }}</span>
+              <button
+                type="button"
+                [title]="S().zoomOut"
+                [attr.aria-label]="S().zoomOut"
+                (click)="zoomOut()"
+              >
+                −
+              </button>
+              <button type="button" [title]="S().fit" [attr.aria-label]="S().fit" (click)="fit()">
+                <svg class="nc-ico" viewBox="0 0 24 24">
+                  <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+                </svg>
+              </button>
+              @if (f().minimap) {
+                <button
+                  type="button"
+                  class="nc-opt"
+                  [title]="S().minimap"
+                  [attr.aria-label]="S().minimap"
+                  [attr.aria-pressed]="miniOn()"
+                  (click)="toggleMinimap()"
+                >
+                  <svg class="nc-ico" viewBox="0 0 24 24">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <rect x="11" y="10" width="6" height="5" rx="1" />
+                  </svg>
+                </button>
+              }
+              <button
+                type="button"
+                class="nc-opt"
+                [title]="S().fullscreen"
+                [attr.aria-label]="S().fullscreen"
+                (click)="toggleFullscreen()"
+              >
+                <svg class="nc-ico" viewBox="0 0 24 24">
+                  <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="nc-toast" role="status" [class.nc-show]="toastShow()">{{ toastMsg() }}</div>
+    </section>
+  </div>
+
+  @if (f().help) {
+    <dialog
+      class="nc-dialog"
+      #help
+      [attr.aria-label]="S().helpTitle"
+      (click)="$event.target === $event.currentTarget && closeHelp()"
+    >
+      <button
+        type="button"
+        class="nc-icbtn nc-close"
+        [attr.aria-label]="S().close"
+        (click)="closeHelp()"
+      >
+        ✕
+      </button>
+      <h2>{{ S().helpTitle }}</h2>
+      <table>
+        @for (row of S().helpRows; track $index) {
+          <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+          </tr>
+        }
+      </table>
+    </dialog>
+  }
+</div>
+
+<ng-template #pathTpl let-steps>
+  <ol class="nc-path">
+    @for (st of steps; track st.id) {
+      <li [style.--c]="st.color">
+        <button
+          type="button"
+          class="nc-pnode"
+          (click)="chipClick(st.id, true)"
+          (pointerenter)="hoverChip(st.id)"
+          (pointerleave)="hoverChip(null)"
+        >
+          {{ st.title }}
+        </button>
+        @if (st.link) {
+          <span class="nc-plink">{{ st.link }}</span>
+        }
+      </li>
+    }
+  </ol>
+</ng-template>
